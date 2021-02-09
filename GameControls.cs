@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace GloriousMinesweeper
@@ -10,6 +11,7 @@ namespace GloriousMinesweeper
         public static Tile CurrentTile { get; private set; }
         private static PositionedNumber UncoveredTiles { get; set; }
         private static PositionedNumber NumberOfFlags { get; set; }
+        private static List<PositionedText> Labels {get; set;}
         private static int IncorrectFlags { get; set; }
         private static Stopwatch CompletionTime { get; set; }
 
@@ -18,17 +20,22 @@ namespace GloriousMinesweeper
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
             UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 3);
             NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 4);
+            Labels = new List<PositionedText>();
             CompletionTime = new Stopwatch();
+            Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 24, 3));
+            Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 21, 4));
         }
         
         public static bool GameWin(out int score)
         {
             CompletionTime.Stop();
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = PlayedGame.Text;
-            Console.WriteLine("Congratulations, you swept the mines!");
+            Console.Clear();
+            Labels.Clear();
+            Labels.Add(new PositionedText("Congratulations, you swept the mines!", ConsoleColor.Black, 6, 3));
             string time = String.Format("{0:00}:{1:00}:{2:00}.{3:00} ", CompletionTime.Elapsed.Hours, CompletionTime.Elapsed.Minutes, CompletionTime.Elapsed.Seconds, CompletionTime.Elapsed.Milliseconds / 10);
-            Console.WriteLine(time);
+            Labels.Add(new PositionedText(time, ConsoleColor.Black, 6, 4));
+            foreach (PositionedText label in Labels)
+                label.Print(false);
             score = 10000;
             return true;
         }
@@ -48,6 +55,8 @@ namespace GloriousMinesweeper
 
         public static bool Gameplay(out int score)
         {
+            foreach (PositionedText label in Labels)
+                label.Print(false);
             CompletionTime.Start();
             do
             {
