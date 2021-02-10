@@ -5,24 +5,9 @@ namespace GloriousMinesweeper
 {
     class GameMenu
     {
-        private GameSetting[] gameSettings;
-
-
-
         public PositionedText Name { get; }
-        public GameSetting[] GameSettings
-        {
-            get
-            {
-                return gameSettings;
-            }
-            private set
-            {
-                gameSettings = value;
-            }
-        }
+        public GameSetting[] GameSettings { get; private set; }
         public int ChosenLine { get; protected set; }
-
         public Difficulties Difficulty { get; }
 
 
@@ -31,7 +16,7 @@ namespace GloriousMinesweeper
         {
             Difficulty = difficulty;
             Name = new PositionedText(name, ConsoleColor.Black, (Console.WindowWidth - name.Length) / 2, 0) ;
-            int mines = 5 * (int)Math.Pow((int)difficulty, 2) * ((int)difficulty + 2);
+            int mines = 5 * (int)Math.Pow((int)difficulty, 2) * ((int)difficulty + 1);
 
 
             GameSettings = new GameSetting[10];
