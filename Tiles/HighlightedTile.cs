@@ -17,8 +17,12 @@ namespace GloriousMinesweeper
             Color = GameControls.PlayedGame.Highlight;
             TilesAround = originalTile.TilesAround;
             Position = originalTile.Position;
-            MinefieldPositon = originalTile.MinefieldPositon;
+            MinefieldPosition = originalTile.MinefieldPosition;
             PrintTile();
+            foreach (Tile tile in TilesAround)
+            {
+                tile.TilesAroundCalculator();
+            }
         }
         
 

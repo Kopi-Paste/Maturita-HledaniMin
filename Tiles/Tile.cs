@@ -13,12 +13,17 @@ namespace GloriousMinesweeper
         public ConsoleColor OriginalColor { get; protected set; }
         public List<Tile> TilesAround { get; set; }
         public Coordinates Position { get; protected set; }
-        public Coordinates MinefieldPositon { get; protected set; }
+        public Coordinates MinefieldPosition { get; protected set; }
 
         
 
-        public void TilesAroundCalculator(int horizontal, int vertical)
+        public void TilesAroundCalculator()
         {
+            if (TilesAround == null)
+                TilesAround = new List<Tile>();
+            TilesAround.Clear();
+            int horizontal = MinefieldPosition.Horizontal;
+            int vertical = MinefieldPosition.Vertical;
             if (horizontal != 0)
             {
                 TilesAround.Add(GameControls.PlayedGame.Minefield[horizontal - 1, vertical]);
@@ -49,6 +54,7 @@ namespace GloriousMinesweeper
                         TilesAround.Add(GameControls.PlayedGame.Minefield[horizontal, vertical + 1]);
                 }
             }
+            return;
         }
         public void MinesAroundCalculator()
         {
@@ -70,6 +76,14 @@ namespace GloriousMinesweeper
         {
             Mine = true;
         }
-
+        public void PrintType()
+        {
+            Console.SetCursorPosition(25, 50);
+            Console.WriteLine(GetType());
+            Console.WriteLine(Covered);
+        }
+       
     }
 }
+
+

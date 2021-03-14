@@ -18,10 +18,16 @@ namespace GloriousMinesweeper
                 Color = GameControls.PlayedGame.Uncover;
             else if (originalTile.OriginalColor == GameControls.PlayedGame.CoverSecondary || originalTile.OriginalColor == GameControls.PlayedGame.UncoverSecondary)
                 Color = GameControls.PlayedGame.UncoverSecondary;
-            TilesAround = originalTile.TilesAround;
             Position = originalTile.Position;
-            MinefieldPositon = originalTile.MinefieldPositon;
+            MinefieldPosition = originalTile.MinefieldPosition;
+            TilesAround = originalTile.TilesAround;
+            TilesAroundCalculator();
             PrintTile();
+            //GameControls.PlayedGame.Minefield[MinefieldPosition.Horizontal, MinefieldPosition.Vertical] = this;
+            foreach (Tile tile in TilesAround)
+            {
+                tile.MinesAroundCalculator();
+            }
         }
 
         public override void PrintTile()

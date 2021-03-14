@@ -14,7 +14,7 @@ namespace GloriousMinesweeper
             Color = color;
             TilesAround = new List<Tile>();
             Position = new Coordinates(horizontal, vertical);
-            MinefieldPositon = new Coordinates(x, y);
+            MinefieldPosition = new Coordinates(x, y);
         }
         public CoveredTile(Tile originalTile)
         {
@@ -25,7 +25,7 @@ namespace GloriousMinesweeper
             Color = originalTile.OriginalColor;
             TilesAround = originalTile.TilesAround;
             Position = originalTile.Position;
-            MinefieldPositon = originalTile.MinefieldPositon;
+            MinefieldPosition = originalTile.MinefieldPosition;
             PrintTile();
         }
 
@@ -40,7 +40,20 @@ namespace GloriousMinesweeper
         }
         public override int FlagTile()
         {
-            throw new NotImplementedException();
+            Flag = !Flag;
+            Console.SetCursorPosition(Position.Horizontal, Position.Vertical);
+            if (Flag)
+            {
+                Console.BackgroundColor = GameControls.PlayedGame.Flag;
+                Console.Write("  ");
+                return 1;
+            }
+            else
+            {
+                Console.BackgroundColor = GameControls.PlayedGame.Highlight;
+                Console.Write("  ");
+                return -1;
+            }
         }
     }
 }

@@ -80,9 +80,8 @@ namespace GloriousMinesweeper
         }
         public void TilesAndMinesAroundCalculator()
         {
-            for (int x = 0; x != HorizontalTiles; x++)
-                for (int y = 0; y != VerticalTiles; y++)
-                    Minefield[x, y].TilesAroundCalculator(x, y);
+            foreach (Tile tile in Minefield)
+                tile.TilesAroundCalculator();
             foreach (Tile tile in Minefield)
                 tile.MinesAroundCalculator();
         }
@@ -97,14 +96,14 @@ namespace GloriousMinesweeper
             int clearedMines = 0;
             if (selectedTile.Mine)
             {
-                Minefield[selectedTile.MinefieldPositon.Horizontal, selectedTile.MinefieldPositon.Vertical].ClearMine();
+                Minefield[selectedTile.MinefieldPosition.Horizontal, selectedTile.MinefieldPosition.Vertical].ClearMine();
                 clearedMines++;
             }
             foreach (Tile tile in forbbidenTiles)
             {
                 if (tile.Mine)
                 {
-                    Minefield[tile.MinefieldPositon.Horizontal, tile.MinefieldPositon.Vertical].ClearMine();
+                    Minefield[tile.MinefieldPosition.Horizontal, tile.MinefieldPosition.Vertical].ClearMine();
                     clearedMines++;
                 }
             }
@@ -117,20 +116,19 @@ namespace GloriousMinesweeper
                 {
                     horizontalPosition = rnd.Next(HorizontalTiles);
                 }
-                while (Math.Abs(horizontalPosition - selectedTile.MinefieldPositon.Horizontal) <= 1);
+                while (Math.Abs(horizontalPosition - selectedTile.MinefieldPosition.Horizontal) <= 1);
                 do
                 {
                     verticalPosition = rnd.Next(VerticalTiles);
                 }
-                while (Math.Abs(verticalPosition - selectedTile.MinefieldPositon.Vertical) <= 1);
+                while (Math.Abs(verticalPosition - selectedTile.MinefieldPosition.Vertical) <= 1);
                 if (!Minefield[horizontalPosition, verticalPosition].Mine)
                 {
                     Minefield[horizontalPosition, verticalPosition].PlantMine();
                     clearedMines--;
                 }
             }
-            foreach (Tile tile in Minefield)
-                tile.MinesAroundCalculator();
+            TilesAndMinesAroundCalculator();
         }
     }
 }

@@ -17,5 +17,9 @@ namespace GloriousMinesweeper
         {
             Console.SetCursorPosition(Horizontal, Vertical);
         }
+        public bool CompareCoordinates(Coordinates compareWith)
+        {
+            return (Horizontal == compareWith.Horizontal && Vertical == compareWith.Vertical);
+        }
     }
 }
