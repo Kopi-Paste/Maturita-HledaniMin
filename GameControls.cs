@@ -9,12 +9,13 @@ namespace GloriousMinesweeper
         public static Game PlayedGame { get; set; }
         public static ChangableCoordinates CurrentMinefieldPosition { get; private set; }
         public static Tile CurrentTile { get; private set; }
+        private static bool EndGame { get; set; }
         private static PositionedNumber UncoveredTiles { get; set; }
         private static PositionedNumber NumberOfFlags { get; set; }
         private static List<PositionedText> Labels {get; set;}
         private static int IncorrectFlags { get; set; }
         private static Stopwatch CompletionTime { get; set; }
-        private static int ScoreMultiplier { get; set; }
+        private static decimal ScoreMultiplier { get; set; }
 
         public static void SetDefault()
         {
@@ -23,12 +24,13 @@ namespace GloriousMinesweeper
             NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 4);
             Labels = new List<PositionedText>();
             CompletionTime = new Stopwatch();
+            EndGame = false;
             ScoreMultiplier = 1;
             Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 24, 3));
             Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 21, 4));
         }
         
-        public static bool GameWin(out int score)
+        public static bool GameWin(out decimal score)
         {
             CompletionTime.Stop();
             Console.Clear();
@@ -38,10 +40,10 @@ namespace GloriousMinesweeper
             Labels.Add(new PositionedText(time, ConsoleColor.Black, 6, 4));
             foreach (PositionedText label in Labels)
                 label.Print(false);
-            score = 10000;
+            score = 1000 * ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * PlayedGame.Mines * PlayedGame.Mines / CompletionTime.ElapsedMilliseconds;
             return true;
         }
-        public static bool GameLose(out int score)
+        public static bool GameLose(out decimal score)
         {
             CompletionTime.Stop();
             Console.BackgroundColor = ConsoleColor.Black;
@@ -55,16 +57,15 @@ namespace GloriousMinesweeper
         }
         
 
-        public static bool Gameplay(out int score)
+        public static bool Gameplay(out decimal score)
         {
             foreach (PositionedText label in Labels)
                 label.Print(false);
             CompletionTime.Start();
-            bool endGame = false;
             do
             {
-                endGame = GameTurn();
-            } while (!endGame);
+                EndGame = GameTurn();
+            } while (!EndGame);
             if ((UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return GameWin(out score);
             else
@@ -85,6 +86,8 @@ namespace GloriousMinesweeper
         }
         public static bool GameTurn()
         {
+            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+                return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
             UncoveredTiles.Print(false);
             NumberOfFlags.Print(false);
@@ -93,6 +96,8 @@ namespace GloriousMinesweeper
         }
         public static bool GameTurn(ConsoleKey keypressed)
         {
+            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+                return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
             UncoveredTiles.Print(false);
             NumberOfFlags.Print(false);
@@ -227,22 +232,30 @@ namespace GloriousMinesweeper
         }
         public static void Solve(bool quick)
         {
-            while (0 == 0)
+            while (!EndGame)
                 if (Hint(quick))
                 { }
                 else
                     ScoreMultiplier /= 2;
+            Console.Write("Solve finished");
+            return;
         }
         public static bool Hint(bool quick)
         {
+            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+            {
+                EndGame = true;
+                return true;
+            }
             if (UncoveredTiles.Number == 0)
             {
-                GameAction(ConsoleKey.Enter);
+                EndGame = GameTurn(ConsoleKey.Enter);
                 return false;
             }
             
             foreach (Tile tile in PlayedGame.Minefield)
             {
+                
                 if (tile.Covered)
                     continue;
                 tile.TilesAroundCalculator();
@@ -253,12 +266,8 @@ namespace GloriousMinesweeper
                         Tile potentialFlagTile = tile.TilesAround[x];
                         if (!potentialFlagTile.Flag && potentialFlagTile.Covered)
                         {
-                            Console.SetCursorPosition(25, 50);
-                            Console.WriteLine("Flagging   tile at: " + potentialFlagTile.MinefieldPosition.Horizontal + potentialFlagTile.MinefieldPosition.Vertical);
-                            Console.SetCursorPosition(26, 50);
-                            Console.WriteLine("Because of: " + tile.MinefieldPosition.Horizontal + tile.MinefieldPosition.Vertical);
                             NavigateToTile(potentialFlagTile, quick);
-                            GameTurn(ConsoleKey.Spacebar);
+                            EndGame = GameTurn(ConsoleKey.Spacebar);
 
                             return false;
 
@@ -272,11 +281,8 @@ namespace GloriousMinesweeper
                         Tile potentialUncoverTile = tile.TilesAround[x];
                         if (potentialUncoverTile.Covered && !potentialUncoverTile.Flag)
                         {
-                            Console.SetCursorPosition(25, 50);
-                            Console.WriteLine("Uncovering tile at: " + potentialUncoverTile.MinefieldPosition.Horizontal + potentialUncoverTile.MinefieldPosition.Vertical);
-                            Console.WriteLine("Because of: " + tile.MinefieldPosition.Horizontal + tile.MinefieldPosition.Vertical);
                             NavigateToTile(potentialUncoverTile, quick);
-                            GameTurn(ConsoleKey.Enter);
+                            EndGame = GameTurn(ConsoleKey.Enter);
                             return false;
                         }
                     }
@@ -287,13 +293,13 @@ namespace GloriousMinesweeper
                 if (tile.Covered && tile.Mine && !tile.Flag)
                 {
                     NavigateToTile(tile, quick);
-                    GameAction(ConsoleKey.Spacebar);
+                    EndGame = GameTurn(ConsoleKey.Spacebar);
                     return true;
                 }
                 if (tile.Covered && !tile.Mine)
                 {
                     NavigateToTile(tile, quick);
-                    GameAction(ConsoleKey.Enter);
+                    EndGame = GameTurn(ConsoleKey.Enter);
                     return true;
                 }    
             }
@@ -306,7 +312,7 @@ namespace GloriousMinesweeper
             {
                 while (tile.MinefieldPosition.Horizontal != CurrentMinefieldPosition.Horizontal)
                 {
-                    GameTurn(ConsoleKey.RightArrow);
+                    EndGame = GameTurn(ConsoleKey.RightArrow);
                     if (!quick)
                         System.Threading.Thread.Sleep(50);
                 }
@@ -315,7 +321,7 @@ namespace GloriousMinesweeper
             {
                 while (tile.MinefieldPosition.Horizontal != CurrentMinefieldPosition.Horizontal)
                 {
-                    GameTurn(ConsoleKey.LeftArrow);
+                    EndGame = GameTurn(ConsoleKey.LeftArrow);
                     if (!quick)
                         System.Threading.Thread.Sleep(50);
                 }
@@ -324,7 +330,7 @@ namespace GloriousMinesweeper
             {
                 while (tile.MinefieldPosition.Vertical != CurrentMinefieldPosition.Vertical)
                 {
-                    GameTurn(ConsoleKey.DownArrow);
+                    EndGame = GameTurn(ConsoleKey.DownArrow);
                     if (!quick)
                         System.Threading.Thread.Sleep(50);
                 }
@@ -333,7 +339,7 @@ namespace GloriousMinesweeper
             {
                 while (tile.MinefieldPosition.Vertical != CurrentMinefieldPosition.Vertical)
                 {
-                    GameTurn(ConsoleKey.UpArrow);
+                    EndGame = GameTurn(ConsoleKey.UpArrow);
                     if (!quick)
                         System.Threading.Thread.Sleep(50);
                 }

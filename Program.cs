@@ -36,7 +36,7 @@ namespace GloriousMinesweeper
             Console.Clear();
             GameControls.PlayedGame.PrintMinefield();
             GameControls.SetDefault();
-            gameWon = GameControls.Gameplay(out int score);
+            gameWon = GameControls.Gameplay(out decimal score);
             Console.Write("Your score: " + score);
         }
         public static ConsoleColor DefaultTextColour { get; set; }
