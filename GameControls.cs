@@ -20,6 +20,8 @@ namespace GloriousMinesweeper
         public static void SetDefault()
         {
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
+            CurrentTile = PlayedGame.Minefield[0, 0];
+            IncorrectFlags = 0;
             UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 3);
             NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 4);
             Labels = new List<PositionedText>();

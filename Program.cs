@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace GloriousMinesweeper
 {
@@ -23,24 +24,34 @@ namespace GloriousMinesweeper
             DiffSwitcher.GameMenus[2] = hard;
             DiffSwitcher.GameMenus[3] = null;
             DiffSwitcher.ChosenMenu = 0;
-
-            DiffSwitcher.SwitchTo(0, true);
             
-            int[] gameParameteres = DiffSwitcher.EnableSwitch();
+            GameControls.PlayedGame = DiffSwitcher.EnableSwitch();
             Console.Clear();
-            PositionedText loadingSign = new PositionedText("Loading...", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 12);
-            loadingSign.Print(false);
             bool gameWon;
-            GameControls.PlayedGame = new Game(gameParameteres);
-            GameControls.PlayedGame.TilesAndMinesAroundCalculator();
-            Console.Clear();
-            GameControls.PlayedGame.PrintMinefield();
-            GameControls.SetDefault();
-            gameWon = GameControls.Gameplay(out decimal score);
-            Console.Write("Your score: " + score);
+            bool UserWantsToPlayAgain = false;
+            do
+            {
+                GameControls.PlayedGame.PrintMinefield();
+                GameControls.PlayedGame.TilesAndMinesAroundCalculator();
+                GameControls.SetDefault();
+                gameWon = GameControls.Gameplay(out decimal score);
+                PostGameMenu postGameMenu = new PostGameMenu(score, gameWon, out UserWantsToPlayAgain);
+            } while (UserWantsToPlayAgain);
         }
         public static ConsoleColor DefaultTextColour { get; set; }
         public static List<ConsoleColor> TakenColours { get; set; }
+        public static void ShowLeaderboards()
+        {
+            Console.Clear();
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper", "highscores.txt");
+            string[] leaderboards = File.ReadAllLines(path);
+            for (int x = 1; x <= leaderboards.Length; x++)
+            {
+                string toPrint = x.ToString() + ".\t" + leaderboards[x - 1];
+                Console.WriteLine(toPrint);
+            }
+            return;
+        }
     }
     
 }

@@ -54,6 +54,7 @@ namespace GloriousMinesweeper
 
         public virtual ConsoleKey MenuAction()
         {
+            ChosenLine = 0;
             ConsoleKey keypressed;
             do
             {

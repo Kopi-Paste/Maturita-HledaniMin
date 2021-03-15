@@ -35,12 +35,14 @@ namespace GloriousMinesweeper
         public static void SwitchTo(int number, bool highlightName)
         {
             ChosenMenu = number;
+
             Console.Clear();
             GameMenus[ChosenMenu].PrintMenu(highlightName);
         }
 
-        public static int[] EnableSwitch()
+        public static Game EnableSwitch()
         {
+            SwitchTo(0, true);
             ConsoleKey keypressed;
             do
             {
@@ -57,7 +59,7 @@ namespace GloriousMinesweeper
                         keypressed = GameMenus[ChosenMenu].MenuAction();
                         break;
                 }
-            } while (keypressed != ConsoleKey.Enter && keypressed != ConsoleKey.Tab);
+            } while (keypressed != ConsoleKey.Enter);
             if (keypressed == ConsoleKey.Enter)
             {
                 int[] parameters = new int[10];
@@ -65,7 +67,10 @@ namespace GloriousMinesweeper
                 {
                     parameters[x] = GameMenus[ChosenMenu].GameSettings[x].SettingValue.Number;
                 }
-                return parameters;
+                Console.Clear();
+                PositionedText loadingSign = new PositionedText("Loading...", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 12);
+                loadingSign.Print(false);
+                return new Game(parameters);
             }
             else
             {
@@ -80,7 +85,10 @@ namespace GloriousMinesweeper
                     {
                         parameters[x] = GameMenus[ChosenMenu].GameSettings[x].SettingValue.Number;
                     }
-                    return parameters;
+                    Console.Clear();
+                    PositionedText loadingSign = new PositionedText("Loading...", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 12);
+                    loadingSign.Print(false);
+                    return new Game(parameters);
                 }
                 else
                 {

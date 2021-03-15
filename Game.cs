@@ -75,8 +75,6 @@ namespace GloriousMinesweeper
                             currentColour = Cover;
                     }
             }
-
-
         }
         public void TilesAndMinesAroundCalculator()
         {
@@ -88,11 +86,14 @@ namespace GloriousMinesweeper
 
         public void PrintMinefield()
         {
+            Console.Clear();
             foreach (Tile tile in Minefield)
                 tile.PrintTile();
         }
         public void MoveMinesOut(Tile selectedTile, List<Tile> forbbidenTiles)
         {
+            Console.SetCursorPosition(25, 50);
+            Console.WriteLine(selectedTile.MinefieldPosition.Horizontal.ToString() + selectedTile.MinefieldPosition.Vertical.ToString());
             int clearedMines = 0;
             if (selectedTile.Mine)
             {
