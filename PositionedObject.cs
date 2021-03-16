@@ -4,21 +4,9 @@ namespace GloriousMinesweeper
 {
     abstract class PositionedObject
     {
-        private ConsoleColor background;
-
-
+        
         private Coordinates Position { get; }
-        public ConsoleColor Background
-        {
-            get
-            {
-                return background;
-            }
-            private set
-            {
-                background = value;
-            }
-        }
+        public ConsoleColor Background { get; private set; }
         
 
         public PositionedObject(ConsoleColor background, int horizontal, int vertical)
@@ -28,6 +16,7 @@ namespace GloriousMinesweeper
         }
         public virtual void Print(bool highlighted)
         {
+            Console.CursorVisible = false;
             Console.BackgroundColor = Background;
             if (highlighted)
                 Console.ForegroundColor = ConsoleColor.White;

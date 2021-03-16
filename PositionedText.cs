@@ -4,21 +4,9 @@ namespace GloriousMinesweeper
 {
     class PositionedText : PositionedObject
     {
-        private string text;
 
-
-
-        public string Text
-        {
-            get
-            {
-                return text;
-            }
-            private set
-            {
-                text = value;
-            }
-        }
+        public string Text { get; private set; }
+        
         public PositionedText(string text, ConsoleColor background, int horizontal, int vertical) : base(background, horizontal, vertical)
         {
             Text = text;

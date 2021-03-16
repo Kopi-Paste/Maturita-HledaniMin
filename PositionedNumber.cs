@@ -4,21 +4,9 @@ namespace GloriousMinesweeper
 {
     class PositionedNumber : PositionedObject
     {
-        private int number;
 
-        
 
-        public int Number
-        { 
-            get
-            {
-                return number;
-            }
-            private set
-            {
-                number = value;
-            }
-        }
+        public int Number { get; private set; }
         public PositionedNumber(int number, ConsoleColor background, int horizontal, int vertical) : base(background, horizontal, vertical)
         {
             Number = number;

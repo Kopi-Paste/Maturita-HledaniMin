@@ -150,19 +150,30 @@ namespace GloriousMinesweeper
             switch (ChosenLabel)
             {
                 case 0:
+                    SwitchableLabels[0].Print(false);
                     SaveHighscore();
                     SwitchableLabels[0] = null;
                     Labels[2] = null;
                     ChosenLabel = 1;
                     return EnableSwitch();
                 case 1:
+                    DiffSwitcher.SwitchTo(0, true);
+                    foreach (GameMenu menu in DiffSwitcher.GameMenus)
+                    {
+                        if (menu == null)
+                            continue;
+                        menu.ChooseLine(0);
+                    }
                     GameControls.PlayedGame = DiffSwitcher.EnableSwitch();
                     return true;
                 case 2:
                     int[] parameters = new int[10];
                     for (int x = 0; x != 10; x++)
                     {
-                        parameters[x] = DiffSwitcher.GameMenus[DiffSwitcher.ChosenMenu].GameSettings[x].SettingValue.Number;
+                        if (x <= 2)
+                            parameters[x] = DiffSwitcher.GameMenus[DiffSwitcher.ChosenMenu].GameSettings[x].SettingValue.Number;
+                        else
+                            parameters[x] = DiffSwitcher.Colours[x - 3].SettingValue.Number;
                         GameControls.PlayedGame = new Game(parameters);
                     }
                     return true;
@@ -174,8 +185,10 @@ namespace GloriousMinesweeper
         private void SaveHighscore()
         {
             PositionedText nickname = new PositionedText("Enter your Nickname: ", ConsoleColor.Black, (Console.WindowWidth - 40) / 2, 17);
-            nickname.Print(false);
+            nickname.Print(true);
+            Console.CursorVisible = true;
             Nickname = Console.ReadLine();
+            Console.CursorVisible = false;
             try
             {
                 List<string> currentLeaderboard = new List<string>(File.ReadAllLines(Path));

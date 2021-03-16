@@ -19,12 +19,11 @@ namespace GloriousMinesweeper
             int mines = 5 * (int)Math.Pow((int)difficulty, 2) * ((int)difficulty + 1);
 
 
-            GameSettings = new GameSetting[10];
-            Program.TakenColours = new List<ConsoleColor>();
+            GameSettings = new GameSetting[3];
             GameSettings[0] = new GameSetting("Number of horizontal tiles", (int)difficulty * 10, false, false, 7);
             GameSettings[1] = new GameSetting("Number of vertical tiles", (int)difficulty * 10, false, false, 9);
             GameSettings[2] = new GameSetting("Number of mines", mines, false, false, 11);
-            GameSettings[3] = new GameSetting("Covered tiles colour", 1, true, false, 13);
+            /*GameSettings[3] = new GameSetting("Covered tiles colour", 1, true, false, 13);
             GameSettings[4] = new GameSetting("Covered tiles secondary colour", 2, true, false, 15);
             GameSettings[5] = new GameSetting("Uncovered tiles colour", 3, true, false, 17);
             GameSettings[6] = new GameSetting("Uncovered tiles secondary colour", 4, true, false, 19);
@@ -33,7 +32,7 @@ namespace GloriousMinesweeper
             GameSettings[9] = new GameSetting("Text colour", 7, false, true, 25);
             for (int x = 1; x < 8; x++)
                 Program.TakenColours.Add((ConsoleColor)x);
-            Program.DefaultTextColour = (ConsoleColor)GameSettings[9].SettingValue.Number;
+            Program.DefaultTextColour = (ConsoleColor)GameSettings[9].SettingValue.Number;*/
             ChosenLine = 0;
         }
 
@@ -50,12 +49,84 @@ namespace GloriousMinesweeper
             thirdLine.Print(false);
             foreach (GameSetting setting in GameSettings)
                 setting.Print(false);
+            foreach (GameSetting colourSetting in DiffSwitcher.Colours)
+                colourSetting.Print(false);
         }
-
-        public virtual ConsoleKey MenuAction()
+        public void ChooseLine(int line)
         {
-            ChosenLine = 0;
+            ChosenLine = line;
+        }
+        public virtual int MenuAction()
+        {
             ConsoleKey keypressed;
+            do
+            {
+                PrintMenu(false);
+                if (ChosenLine <= 2)
+                    GameSettings[ChosenLine].Print(true);
+                else
+                    DiffSwitcher.Colours[ChosenLine - 3].Print(true);
+                keypressed = Console.ReadKey(true).Key;
+                switch (keypressed)
+                {
+                    case ConsoleKey.UpArrow:
+                        if (ChosenLine == 0)
+                        {
+                            GameSettings[ChosenLine].Print(false);
+                            DiffSwitcher.PrintMenuName(true);
+                            return 1;
+                        }
+                        else
+                        {
+                            if (ChosenLine <= 2)
+                                GameSettings[ChosenLine].Print(false);
+                            else
+                                DiffSwitcher.Colours[ChosenLine - 3].Print(false);
+                            ChosenLine--;
+                            break;
+                        }
+                    case ConsoleKey.DownArrow:
+                        if (ChosenLine != 9)
+                        {
+                            if (ChosenLine <= 2)
+                                GameSettings[ChosenLine].Print(false);
+                            else
+                                DiffSwitcher.Colours[ChosenLine - 3].Print(false);
+                            ChosenLine++;
+                            break;
+                        }
+                        break;
+                    case ConsoleKey.LeftArrow:
+                        if (ChosenLine > 2)
+                        {
+                            Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
+                        }
+                        else
+                        {
+                            DiffSwitcher.GameMenus[3] = new CustomGameMenu(keypressed, ChosenLine);
+                            return -1;
+                        }
+                        break;
+                    case ConsoleKey.RightArrow:
+                        if (ChosenLine > 2)
+                        {
+                            Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
+                        }
+                        else
+                        {
+                            DiffSwitcher.GameMenus[3] = new CustomGameMenu(keypressed, ChosenLine);
+                            return -1;
+                        }
+                        break;
+                    case ConsoleKey.Enter:
+                        return 0;
+
+                }
+            /*ConsoleKey keypressed;
             do
             {
                 DiffSwitcher.PrintMenuName(false);
@@ -68,7 +139,7 @@ namespace GloriousMinesweeper
                         {
                             GameSettings[ChosenLine].Print(false);
                             DiffSwitcher.PrintMenuName(true);
-                            return keypressed;
+                            return (int)keypressed;
                         }
                         else
                         {
@@ -106,7 +177,7 @@ namespace GloriousMinesweeper
                                 colourSettings[x] = GameSettings[x + 3];
                             }
                             DiffSwitcher.GameMenus[3] = new CustomGameMenu(keypressed, colourSettings, ChosenLine);
-                            return ConsoleKey.Tab;
+                            return -1;
                         }
                             
                         break;
@@ -133,13 +204,13 @@ namespace GloriousMinesweeper
                                 colourSettings[x] = GameSettings[x + 3];
                             }
                             DiffSwitcher.GameMenus[3] = new CustomGameMenu(keypressed, colourSettings, ChosenLine);
-                            return ConsoleKey.Tab;
+                            return -1;
                         }
                         break;
                     case ConsoleKey.Enter:
-                        return keypressed;
+                        return (int)ConsoleKey.Enter;
                 }
-                GameSettings[ChosenLine].Print(true);
+                GameSettings[ChosenLine].Print(true);*/
                 
             } while (true);
         }
