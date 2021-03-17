@@ -7,16 +7,16 @@ namespace GloriousMinesweeper
     class PostGameMenu
     {
 
-        private bool GameWon { get; }
-        private decimal Score { get; }
-        private bool IsHighscore { get; }
-        private string Nickname { get; set; }
-        private List<PositionedText> Labels { get; }
-        private List<PositionedText> SwitchableLabels { get; }
-        private int ChosenLabel { get; set; }
-        private int Position { get; set; }
-        string Path { get; set; }
-        public PostGameMenu(decimal score, bool won, out bool UserWantsToPlayAgain)
+        private static bool GameWon { get; set; }
+        private static decimal Score { get; set; }
+        private static bool IsHighscore { get; set; }
+        private static string Nickname { get; set; }
+        private static List<PositionedText> Labels { get; set; }
+        private static List<PositionedText> SwitchableLabels { get; set; }
+        private static int ChosenLabel { get; set; }
+        private static int Position { get; set; }
+        private static string Path { get; set; }
+        public static bool ShowMenu(decimal score, bool won)
         {
             GameWon = won;
             Score = score;
@@ -53,9 +53,9 @@ namespace GloriousMinesweeper
             SwitchableLabels.Add(new PositionedText("Quit", ConsoleColor.Black, (Console.WindowWidth - 4) / 2, 15));
             
             ChosenLabel = 1;
-            UserWantsToPlayAgain = EnableSwitch();
+            return EnableSwitch();
         }
-        private bool CheckHighscores()
+        private static bool CheckHighscores()
         {
             Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper");
             try
@@ -110,7 +110,7 @@ namespace GloriousMinesweeper
                 return false;
             }
         }
-        private bool EnableSwitch()
+        private static bool EnableSwitch()
         {
             foreach (PositionedText label in Labels)
             {
@@ -182,7 +182,7 @@ namespace GloriousMinesweeper
             }
             return false;
         }
-        private void SaveHighscore()
+        private static void SaveHighscore()
         {
             PositionedText nickname = new PositionedText("Enter your Nickname: ", ConsoleColor.Black, (Console.WindowWidth - 40) / 2, 17);
             nickname.Print(true);

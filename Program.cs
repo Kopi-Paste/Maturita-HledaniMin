@@ -32,7 +32,7 @@ namespace GloriousMinesweeper
                 GameControls.PlayedGame.TilesAndMinesAroundCalculator();
                 GameControls.SetDefault();
                 gameWon = GameControls.Gameplay(out decimal score);
-                PostGameMenu postGameMenu = new PostGameMenu(score, gameWon, out UserWantsToPlayAgain);
+                UserWantsToPlayAgain = PostGameMenu.ShowMenu(score, gameWon);
             } while (UserWantsToPlayAgain);
         }
         public static List<ConsoleColor> TakenColours { get; set; }
@@ -42,6 +42,7 @@ namespace GloriousMinesweeper
             Console.Clear();
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper", "highscores.txt");
             string[] leaderboards = File.ReadAllLines(path);
+            Console.ForegroundColor = DefaultTextColour;
             Console.CursorVisible = false;
             for (int x = 1; x <= leaderboards.Length; x++)
             {
