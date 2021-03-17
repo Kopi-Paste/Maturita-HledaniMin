@@ -32,7 +32,7 @@ namespace GloriousMinesweeper
                         if (ChosenLine == 0)
                         {
                             GameSettings[ChosenLine].Print(false);
-                            DiffSwitcher.PrintMenuName(true);
+                            //DiffSwitcher.PrintMenuName(true);
                             return 1;
                         }
                         else
@@ -59,24 +59,24 @@ namespace GloriousMinesweeper
                         if (ChosenLine > 2)
                         {
                             Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
-                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[1].SettingValue.Number, GameSettings[2].SettingValue.Number);
                             Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
                         }
                         else
                         {
-                            GameSettings[ChosenLine].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            GameSettings[ChosenLine].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[1].SettingValue.Number, GameSettings[2].SettingValue.Number);
                         }
                         break;
                     case ConsoleKey.RightArrow:
                         if (ChosenLine > 2)
                         {
                             Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
-                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[1].SettingValue.Number, GameSettings[2].SettingValue.Number);
                             Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
                         }
                         else
                         {
-                            GameSettings[ChosenLine].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            GameSettings[ChosenLine].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[1].SettingValue.Number, GameSettings[2].SettingValue.Number);
                         }
                         break;
                     case ConsoleKey.Enter:

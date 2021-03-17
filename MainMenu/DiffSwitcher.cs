@@ -61,7 +61,11 @@ namespace GloriousMinesweeper
                         if (keypressedint == -1)
                         {
                             SwitchTo(3, false);
-                            GameMenus[ChosenMenu].MenuAction();
+                            keypressedint = GameMenus[ChosenMenu].MenuAction();
+                            if (keypressedint == 0)
+                                keypressed = ConsoleKey.Enter;
+                            else
+                                PrintMenuName(true);
                         }
                         else if (keypressedint == 0)
                             keypressed = ConsoleKey.Enter;

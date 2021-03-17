@@ -59,16 +59,25 @@ namespace GloriousMinesweeper
                     Program.DefaultTextColour = (ConsoleColor)SettingValue.Number;
                 Print(true);
             }
-            else if (Setting.Text.EndsWith("tiles"))
+            else if (Setting.Text.EndsWith("tiles:  "))
             {
                 int otherValue = tiles / SettingValue.Number;
-                if (SettingValue.Number + change >= 4 && SettingValue.Number + change <= 50 && (SettingValue.Number + change) * otherValue >= (mines + 20))
+                if (((SettingValue.Number + change) < 4 || (SettingValue.Number + change) > 50) || (((SettingValue.Number + change) * otherValue) < (mines + 20)))
+                { }
+                else
                     SettingValue.ChangeBy(change);
+                /*int otherValue = tiles / SettingValue.Number;
+                if ((SettingValue.Number + change) >= 4 && (SettingValue.Number + change) <= 50 && (SettingValue.Number + change) * otherValue >= (mines + 20))
+                    SettingValue.ChangeBy(change);*/
             }
             else
             {
-                if ((SettingValue.Number + change) >= 2 && (SettingValue.Number + change) <= tiles - 20)
+                if ((SettingValue.Number + change) < 2 || (SettingValue.Number + change) > (tiles - 20))
+                { }
+                else
                     SettingValue.ChangeBy(change);
+                /*if ((SettingValue.Number + change) >= 2 && (SettingValue.Number + change) <= (tiles - 20))
+                    SettingValue.ChangeBy(change);*/
             }
             /*if (Colour || TextColour)
             {
