@@ -17,9 +17,15 @@ namespace GloriousMinesweeper
         {
             Console.SetCursorPosition(Horizontal, Vertical);
         }
-        public bool CompareCoordinates(Coordinates compareWith)
+        public override string ToString()
         {
-            return (Horizontal == compareWith.Horizontal && Vertical == compareWith.Vertical);
+            string toString = Horizontal.ToString() + ',' + Vertical.ToString();
+            return toString;
+        }
+        public Coordinates(Coordinates original, int HorizontalChange, int VerticalChange)
+        {
+            Horizontal = original.Horizontal + HorizontalChange;
+            Vertical = original.Vertical + VerticalChange;
         }
     }
 }

@@ -11,17 +11,19 @@ namespace GloriousMinesweeper
         private static decimal Score { get; set; }
         private static bool IsHighscore { get; set; }
         private static string Nickname { get; set; }
-        private static List<PositionedText> Labels { get; set; }
+        private static List<IGraphic> Labels { get; set; }
         private static List<PositionedText> SwitchableLabels { get; set; }
         private static int ChosenLabel { get; set; }
         private static int Position { get; set; }
         private static string Path { get; set; }
-        public static bool ShowMenu(decimal score, bool won)
+        public static bool ShowMenu(decimal score, bool won, SpecialisedStopwatch PlayTime)
         {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
             GameWon = won;
             Score = score;
             Position = 1;
-            Labels = new List<PositionedText>();
+            Labels = new List<IGraphic>();
             SwitchableLabels = new List<PositionedText>();
             string firstMessage;
             if (won)
@@ -34,29 +36,46 @@ namespace GloriousMinesweeper
                 string secondMessage = "Your score is " + Score;
                 Labels.Add(new PositionedText(secondMessage, ConsoleColor.Black, (Console.WindowWidth - secondMessage.Length) / 2, 7));
             }
+            Labels.Add(new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
+            if (won)
+                Labels.Add(new Border((Console.WindowWidth - firstMessage.Length) / 2 - 3, 3, 17, 46, ConsoleColor.Black, ConsoleColor.Gray, false));
+            else
+                Labels.Add(new Border((Console.WindowWidth - 35) / 2 - 3, 3, 17, 41, ConsoleColor.Black, ConsoleColor.Gray, false));
+            string Time = "Your time: " + PlayTime.ToString();
+            Labels.Add(new PositionedText(Time, ConsoleColor.Black, (Console.WindowWidth - Time.Length) / 2, 9));
             if (won)
                 IsHighscore = CheckHighscores();
             else
                 IsHighscore = false;
             if (IsHighscore)
             {
-                Labels.Add(new PositionedText("Save Highscore", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 9));
-                SwitchableLabels.Add(new PositionedText("Save Highscore", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 9));
+                Labels.Add(new PositionedText("Save Highscore", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 11));
+                SwitchableLabels.Add(new PositionedText("Save Highscore", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 11));
+            }
+            else if (!GameWon)
+            {
+                Labels.Add(new PositionedText("View minefield", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 11));
+                SwitchableLabels.Add(new PositionedText("View minefield", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 11));
             }
             else
+            {
+                Labels.Add(null);
                 SwitchableLabels.Add(null);
-            Labels.Add(new PositionedText("Play again", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 11));
-            SwitchableLabels.Add(new PositionedText("Play again", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 11));
-            Labels.Add(new PositionedText("Play again with the same parameters", ConsoleColor.Black, (Console.WindowWidth - 35) / 2, 13));
-            SwitchableLabels.Add(new PositionedText("Play again with the same parameters", ConsoleColor.Black, (Console.WindowWidth - 35) / 2, 13));
-            Labels.Add(new PositionedText("Quit", ConsoleColor.Black, (Console.WindowWidth - 4) / 2, 15));
-            SwitchableLabels.Add(new PositionedText("Quit", ConsoleColor.Black, (Console.WindowWidth - 4) / 2, 15));
-            
+            }
+            Labels.Add(new PositionedText("Play again", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 13));
+            SwitchableLabels.Add(new PositionedText("Play again", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 13));
+            Labels.Add(new PositionedText("Play again with the same parameters", ConsoleColor.Black, (Console.WindowWidth - 35) / 2, 15));
+            SwitchableLabels.Add(new PositionedText("Play again with the same parameters", ConsoleColor.Black, (Console.WindowWidth - 35) / 2, 15));
+            Labels.Add(new PositionedText("Quit", ConsoleColor.Black, (Console.WindowWidth - 4) / 2, 17));
+            SwitchableLabels.Add(new PositionedText("Quit", ConsoleColor.Black, (Console.WindowWidth - 4) / 2, 17));
+
             ChosenLabel = 1;
             return EnableSwitch();
         }
         private static bool CheckHighscores()
         {
+            if (Score == 0)
+                return false;
             Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper");
             try
             {
@@ -73,7 +92,7 @@ namespace GloriousMinesweeper
             try
             {
                 if (!File.Exists(Path))
-                    File.Create(Path);
+                    File.Create(Path).Dispose();
             }
             catch
             {
@@ -86,7 +105,7 @@ namespace GloriousMinesweeper
                 string[] allLines = File.ReadAllLines(Path);
                 foreach (string line in allLines)
                 {
-                    string[] parts = line.Split('\t');
+                    string[] parts = line.Split("   ");
                     if (Score < Decimal.Parse(parts[1]))
                         Position++;
                     else
@@ -112,11 +131,11 @@ namespace GloriousMinesweeper
         }
         private static bool EnableSwitch()
         {
-            foreach (PositionedText label in Labels)
+            foreach (IGraphic label in Labels)
             {
                 if (label == null)
                     continue;
-                label.Print(false);
+                label.Print(label.GetType() == (typeof(Border)));
             }
             for (int x = 0; x < 4; x++)
             {
@@ -151,19 +170,31 @@ namespace GloriousMinesweeper
             {
                 case 0:
                     SwitchableLabels[0].Print(false);
-                    SaveHighscore();
-                    SwitchableLabels[0] = null;
-                    Labels[2] = null;
-                    ChosenLabel = 1;
+                    if (GameWon)
+                    {
+                        SaveHighscore();
+                        SwitchableLabels[0] = null;
+                        Labels[5] = null;
+                        ChosenLabel = 1;
+                    }
+                    else
+                    {
+                        GameControls.PlayedGame.PrintMinefield(true);
+                        Console.ReadKey();
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                    }
                     return EnableSwitch();
                 case 1:
-                    DiffSwitcher.SwitchTo(0, true);
                     foreach (GameMenu menu in DiffSwitcher.GameMenus)
                     {
                         if (menu == null)
                             continue;
                         menu.ChooseLine(0);
                     }
+                    Console.Clear();
+                    DiffSwitcher.PrintGraphics(true);
+                    DiffSwitcher.SwitchTo(DiffSwitcher.ChosenMenu, true);
                     GameControls.PlayedGame = DiffSwitcher.EnableSwitch();
                     return true;
                 case 2:
@@ -178,37 +209,41 @@ namespace GloriousMinesweeper
                     }
                     return true;
                 case 3:
-                    return false;
+                    Environment.Exit(0);
+                    break;
             }
             return false;
         }
         private static void SaveHighscore()
         {
-            PositionedText nickname = new PositionedText("Enter your Nickname: ", ConsoleColor.Black, (Console.WindowWidth - 40) / 2, 17);
+            PositionedText nickname = new PositionedText("Enter your Nickname: ", ConsoleColor.Black, (Console.WindowWidth - 40) / 2, 21);
             nickname.Print(true);
-            Console.CursorVisible = true;
-            Nickname = Console.ReadLine();
+            do
+            {
+                Console.CursorVisible = true;
+                Console.SetCursorPosition(Console.WindowWidth / 2 + 1, 21);
+                Console.Write(new string(' ', 50));
+                Console.SetCursorPosition(Console.WindowWidth / 2 + 1, 21);
+                Nickname = Console.ReadLine();
+                if (Nickname.Contains("   ") || Nickname.Length > 50 || Nickname == "")
+                {
+                    (new PositionedText("Invalid Nickname!", ConsoleColor.Black, Console.WindowWidth / 2 - 9, 23)).Print(false);
+                    Nickname = "";
+                }
+            } while (Nickname == "");
             Console.CursorVisible = false;
             try
             {
                 List<string> currentLeaderboard = new List<string>(File.ReadAllLines(Path));
                 if (currentLeaderboard.Count == Position - 1)
                 {
-                    currentLeaderboard.Add (Nickname + "\t" + Score);
+                    currentLeaderboard.Add (Nickname + "   " + Score);
                 }
                 else
                 {
-                    int x = currentLeaderboard.Count + 1;
-                    if (currentLeaderboard.Count != 10)
-                        currentLeaderboard.Add(null);
-                    else
-                        currentLeaderboard[9] = null;
-                    while (x != Position)
-                    {
-                        currentLeaderboard[x - 1] = currentLeaderboard[x - 2];
-                        x--;
-                    }
-                    currentLeaderboard[Position - 1] = Nickname + "\t" + Score;
+                    currentLeaderboard.Insert(Position - 1, Nickname + "   " + Score);
+                    if (currentLeaderboard.Count == 11)
+                        currentLeaderboard = currentLeaderboard.GetRange(0, 10);
                 }
                 File.WriteAllLines(Path, currentLeaderboard);
             }
@@ -219,8 +254,6 @@ namespace GloriousMinesweeper
                 Console.WriteLine(e.Message);
             }
             Program.ShowLeaderboards();
-            Console.ReadKey();
-            Console.Clear();
             return;
         }
     }

@@ -2,13 +2,10 @@
 
 namespace GloriousMinesweeper
 {
-    abstract class PositionedObject
+    abstract class PositionedObject : IGraphic
     {
-        
         private Coordinates Position { get; }
         public ConsoleColor Background { get; private set; }
-        
-
         public PositionedObject(ConsoleColor background, int horizontal, int vertical)
         {
             Background = background;

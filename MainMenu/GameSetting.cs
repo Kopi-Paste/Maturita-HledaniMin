@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GloriousMinesweeper
 {
@@ -13,7 +12,7 @@ namespace GloriousMinesweeper
 
         public GameSetting(string text, int defaultValue, bool colourable, bool textColour, int line)
         {
-            text += ":  ";
+            text += ": ";
             ConsoleColor background;
             if (colourable)
                 background = (ConsoleColor)defaultValue;
@@ -21,8 +20,8 @@ namespace GloriousMinesweeper
                 background = ConsoleColor.Black;
             Colour = colourable;
             TextColour = textColour;
-            Setting = new PositionedText(text, background, ((Console.WindowWidth - text.Length) / 2), line);
-            SettingValue = new PositionedNumber(defaultValue, background, ((Console.WindowWidth + text.Length) / 2), line);
+            Setting = new PositionedText(text, background, ((Console.WindowWidth - (text.Length + 8)) / 2), line);
+            SettingValue = new PositionedNumber(defaultValue, background, ((Console.WindowWidth + text.Length - 8) / 2), line);
         }
 
 
@@ -56,10 +55,13 @@ namespace GloriousMinesweeper
                     SettingValue.ColourChangeTo(SettingValue.Number);
                 }
                 else if (TextColour)
+                {
                     Program.DefaultTextColour = (ConsoleColor)SettingValue.Number;
+                    DiffSwitcher.GameMenus[DiffSwitcher.ChosenMenu].PrintMenu(false);
+                }
                 Print(true);
             }
-            else if (Setting.Text.EndsWith("tiles:  "))
+            else if (Setting.Text.EndsWith("tiles: "))
             {
                 int otherValue = tiles / SettingValue.Number;
                 if (((SettingValue.Number + change) < 4 || (SettingValue.Number + change) > 50) || (((SettingValue.Number + change) * otherValue) < (mines + 20)))
@@ -124,6 +126,22 @@ namespace GloriousMinesweeper
                 else
                     SettingValue.ChangeBy(change);
             }*/
+        }
+        public void ChangeValueTo(int newValue)
+        {
+            if (!Colour && !TextColour)
+                return;
+            SettingValue.ChangeTo(newValue);
+            if (Colour)
+            {
+                Setting.ColourChangeTo(newValue);
+                SettingValue.ColourChangeTo(newValue);
+            }
+            else
+            {
+                Program.DefaultTextColour = (ConsoleColor)newValue;
+            }
+
         }
         public void Print(bool highlight)
         {

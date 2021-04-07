@@ -6,7 +6,7 @@ namespace GloriousMinesweeper
     {
         public HighlightedTile(Tile originalTile)
         {
-            if (originalTile.Color == GameControls.PlayedGame.Highlight)
+            if (originalTile.Color == (ConsoleColor)DiffSwitcher.Colours[5].SettingValue.Number)
                 OriginalColor = originalTile.OriginalColor;
             else
                 OriginalColor = originalTile.Color;

@@ -10,68 +10,117 @@ namespace GloriousMinesweeper
         public static ChangableCoordinates CurrentMinefieldPosition { get; private set; }
         public static Tile CurrentTile { get; private set; }
         private static bool EndGame { get; set; }
-        private static PositionedNumber UncoveredTiles { get; set; }
-        private static PositionedNumber NumberOfFlags { get; set; }
-        private static List<PositionedText> Labels {get; set;}
-        private static int IncorrectFlags { get; set; }
-        private static Stopwatch CompletionTime { get; set; }
-        private static decimal ScoreMultiplier { get; set; }
+        public static PositionedNumber UncoveredTiles { get; private set; }
+        public static PositionedNumber NumberOfFlags { get; private set; }
+        private static List<IGraphic> Labels {get; set;}
+        public static int IncorrectFlags { get; private set; }
+        public static SpecialisedStopwatch CompletionTime { get; set; }
+        public static decimal ScoreMultiplier { get; private set; }
+        private static bool GameAborted { get; set; }
 
         public static void SetDefault()
         {
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
             CurrentTile = PlayedGame.Minefield[0, 0];
             IncorrectFlags = 0;
-            UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 3);
-            NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 6, 4);
-            Labels = new List<PositionedText>();
-            CompletionTime = new Stopwatch();
+            UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 8, 3);
+            NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 8, 4);
+            Labels = new List<IGraphic>();
+            CompletionTime = new SpecialisedStopwatch("0", "0");
             EndGame = false;
+            GameAborted = false;
             ScoreMultiplier = 1;
-            Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 24, 3));
-            Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 21, 4));
+            Labels.Add(new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new Border(new Coordinates(PlayedGame.Minefield[0, 0].Position, -2, -1), PlayedGame.VerticalTiles + 2, 2 * (PlayedGame.HorizontalTiles + 2), ConsoleColor.Black, ConsoleColor.White, false));
+            Labels.Add(new Border((Console.WindowWidth - 27), 2, 4, 22, ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 26, 3));
+            Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 23, 4));
+            Labels.Add(new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
+            Labels.Add(new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
+            Labels.Add(new Border(Console.WindowWidth - 55, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new PositionedText("Uncover all tiles", PlayedGame.Uncover, 8, 12));
+            Labels.Add(new PositionedText("without mines and", PlayedGame.Uncover, 8, 13));
+            Labels.Add(new PositionedText("flag all tiles", PlayedGame.Uncover, 8, 14));
+            Labels.Add(new PositionedText("with them!", PlayedGame.Uncover, 8, 15));
+            Labels.Add(new PositionedText("Numbers on tiles", PlayedGame.UncoverSecondary, 8, 24));
+            Labels.Add(new PositionedText("indicate how many", PlayedGame.UncoverSecondary, 8, 25));
+            Labels.Add(new PositionedText("mines are around.", PlayedGame.UncoverSecondary, 8, 26));
+            Labels.Add(new PositionedText("Beaware, if you", PlayedGame.Uncover, 33, 12));
+            Labels.Add(new PositionedText("try to uncover", PlayedGame.Uncover, 33, 13));
+            Labels.Add(new PositionedText("tile with mine", PlayedGame.Uncover, 33, 14));
+            Labels.Add(new PositionedText("you will lose.", PlayedGame.Uncover, 33, 15));
+            Labels.Add(new PositionedText("If you have a tile", PlayedGame.UncoverSecondary, 33, 24));
+            Labels.Add(new PositionedText("marked by a flag", PlayedGame.UncoverSecondary, 33, 25));
+            Labels.Add(new PositionedText("you will not be", PlayedGame.UncoverSecondary, 33, 26));
+            Labels.Add(new PositionedText("able to uncover", PlayedGame.UncoverSecondary, 33, 27));
+            Labels.Add(new PositionedText("the tile.", PlayedGame.UncoverSecondary, 33, 28));
+            Labels.Add(new PositionedText("Game controls:", PlayedGame.Uncover, Console.WindowWidth - 52, 12));
+            Labels.Add(new PositionedText("Use arrow keys to move around", PlayedGame.Uncover, Console.WindowWidth - 52, 13));
+            Labels.Add(new PositionedText("Use Enter to uncover tile", PlayedGame.Uncover, Console.WindowWidth - 52, 15));
+            Labels.Add(new PositionedText("First uncover is 100 % safe", PlayedGame.Uncover, Console.WindowWidth - 52, 16));
+            Labels.Add(new PositionedText("Use Spacebar to flag/unflag tile", PlayedGame.Uncover, Console.WindowWidth - 52, 18));
+            Labels.Add(new PositionedText("Need help? Use H to get a hint", PlayedGame.Uncover, Console.WindowWidth - 52, 20));
+            Labels.Add(new PositionedText("Warning: Doing so in cases when it", PlayedGame.Uncover, Console.WindowWidth - 52, 21));
+            Labels.Add(new PositionedText("is not needed will lower your score", PlayedGame.Uncover, Console.WindowWidth - 52, 22));
+            Labels.Add(new PositionedText("Or you can use S to let the game solve itself", PlayedGame.Uncover, Console.WindowWidth - 52, 24));
+            Labels.Add(new PositionedText("Or Q to solve itself very very quickly", PlayedGame.Uncover, Console.WindowWidth - 52, 25));
+            Labels.Add(new PositionedText("You can also use Escape to pause the game", PlayedGame.Uncover, Console.WindowWidth - 52, 27));
+            Labels.Add(new PositionedText("or to stop auto-solve", PlayedGame.Uncover, Console.WindowWidth - 52, 28));
+            Labels.Add(new PositionedText("Try to solve the game as quickly as possible", PlayedGame.Uncover, Console.WindowWidth - 52, 30));
+            Labels.Add(new PositionedText("to achieve the highest score.", PlayedGame.Uncover, Console.WindowWidth - 52, 31));
+            Labels.Add(new PositionedText("Good Luck!", PlayedGame.Uncover, Console.WindowWidth - 52, 34));
         }
         
-        public static bool GameWin(out decimal score)
+        public static bool GameWin(out decimal score, out SpecialisedStopwatch playTime)
         {
             CompletionTime.Stop();
-            Console.Clear();
+            /*Console.Clear();
             Labels.Clear();
             Labels.Add(new PositionedText("Congratulations, you swept the mines!", ConsoleColor.Black, 6, 3));
             string time = String.Format("{0:00}:{1:00}:{2:00}.{3:00} ", CompletionTime.Elapsed.Hours, CompletionTime.Elapsed.Minutes, CompletionTime.Elapsed.Seconds, CompletionTime.Elapsed.Milliseconds / 10);
             Labels.Add(new PositionedText(time, ConsoleColor.Black, 6, 4));
             foreach (PositionedText label in Labels)
-                label.Print(false);
-            score = 1000 * ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * PlayedGame.Mines * PlayedGame.Mines / CompletionTime.ElapsedMilliseconds;
+                label.Print(false);*/
+            score = Math.Round(1000 * ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * PlayedGame.Mines * PlayedGame.Mines / CompletionTime.ElapsedMilliseconds, 5);
+            playTime = CompletionTime;
             return true;
         }
-        public static bool GameLose(out decimal score)
+        public static bool GameLose(out decimal score, out SpecialisedStopwatch playTime)
         {
             CompletionTime.Stop();
-            Console.BackgroundColor = ConsoleColor.Black;
+            /*Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = PlayedGame.Text;
             Console.WriteLine("Mines are victorious.");
             string time = String.Format("{0:00}:{1:00}:{2:00}.{3:00} ",
                 CompletionTime.Elapsed.Hours, CompletionTime.Elapsed.Minutes, CompletionTime.Elapsed.Seconds, CompletionTime.Elapsed.Milliseconds / 10);
-            Console.WriteLine(time);
+            Console.WriteLine(time);*/
             score = 0;
+            playTime = CompletionTime;
             return false;
         }
         
 
-        public static bool Gameplay(out decimal score)
+        public static bool Gameplay(out decimal score, out SpecialisedStopwatch playTime)
         {
-            foreach (PositionedText label in Labels)
-                label.Print(false);
+            for (int x = 0; x < Labels.Count; x++)
+                Labels[x].Print(x < 2);
             CompletionTime.Start();
             do
             {
                 EndGame = GameTurn();
             } while (!EndGame);
             if ((UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
-                return GameWin(out score);
+                return GameWin(out score, out playTime);
+            else if (GameAborted)
+            {
+                score = -1;
+                playTime = CompletionTime;
+                return false;
+            }
             else
-                return GameLose(out score);
+                return GameLose(out score, out playTime);
 
             /*do
             {
@@ -88,7 +137,7 @@ namespace GloriousMinesweeper
         }
         public static bool GameTurn()
         {
-            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+            if (UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
             UncoveredTiles.Print(false);
@@ -110,7 +159,7 @@ namespace GloriousMinesweeper
             if (CurrentTile.Covered)
                 CurrentTile = new CoveredTile(CurrentTile);
             else
-                CurrentTile = new UncoveredTile(CurrentTile);
+                CurrentTile = new UncoveredTile(CurrentTile, true);
             if (keypressed == ConsoleKey.LeftArrow || keypressed == ConsoleKey.RightArrow || keypressed == ConsoleKey.UpArrow || keypressed == ConsoleKey.DownArrow)
             {
                 
@@ -147,6 +196,22 @@ namespace GloriousMinesweeper
                     case ConsoleKey.Q:
                         Solve(true);
                         break;
+                    case ConsoleKey.Escape:
+                        CompletionTime.Stop();
+                        bool unpause = PauseGame();
+                        if (unpause)
+                        {
+                            PlayedGame.PrintMinefield();
+                            for (int x = 0; x < Labels.Count; x++)
+                                Labels[x].Print(x < 2);
+                            CompletionTime.Start();
+                        }
+                        else
+                        {
+                            GameAborted = true;
+                            return true;
+                        }
+                        break;
                     case ConsoleKey.Spacebar:
                         if (CurrentTile.Covered)
                         {
@@ -168,7 +233,7 @@ namespace GloriousMinesweeper
                             }
                             if (CurrentTile.Mine)
                                 return true;
-                            CurrentTile = new UncoveredTile(CurrentTile);
+                            CurrentTile = new UncoveredTile(CurrentTile, true);
                             if (CurrentTile.MinesAround == 0)
                             {
                                 int automaticallyUnflaged = 0;
@@ -200,7 +265,7 @@ namespace GloriousMinesweeper
                         NumberOfFlags.ChangeBy(-1);
                         IncorrectFlags--;
                     }
-                    PlayedGame.Minefield[currentHorizontal, currentVertical] =  new UncoveredTile(PlayedGame.Minefield[currentHorizontal, currentVertical]);
+                    PlayedGame.Minefield[currentHorizontal, currentVertical] =  new UncoveredTile(PlayedGame.Minefield[currentHorizontal, currentVertical], true);
                     if (PlayedGame.Minefield[currentHorizontal, currentVertical].MinesAround == 0)
                     {
                         tilesUncovered += UncoverTilesAround(PlayedGame.Minefield[currentHorizontal, currentVertical]);
@@ -234,12 +299,16 @@ namespace GloriousMinesweeper
         }
         public static void Solve(bool quick)
         {
-            while (!EndGame)
-                if (Hint(quick))
-                { }
-                else
-                    ScoreMultiplier /= 2;
-            Console.Write("Solve finished");
+            do
+            {
+                while (!Console.KeyAvailable && !EndGame)
+                {
+                    if (!Hint(quick))
+                        ScoreMultiplier /= 2;
+                }
+                if (EndGame)
+                    break;
+            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
             return;
         }
         public static bool Hint(bool quick)
@@ -248,6 +317,18 @@ namespace GloriousMinesweeper
             {
                 EndGame = true;
                 return true;
+            }
+            if (IncorrectFlags != 0)
+            {
+                foreach (Tile tile in PlayedGame.Minefield)
+                {
+                    if (tile.Flag && !tile.Mine)
+                    {
+                        NavigateToTile(tile, quick);
+                        EndGame = GameTurn(ConsoleKey.Spacebar);
+                        return false;
+                    }
+                }
             }
             if (UncoveredTiles.Number == 0)
             {
@@ -292,13 +373,13 @@ namespace GloriousMinesweeper
             }
             foreach (Tile tile in PlayedGame.Minefield)
             {
-                if (tile.Covered && tile.Mine && !tile.Flag)
+                if (tile.Covered && tile.Mine && !tile.Flag && (CountCoveredAround(tile) != tile.TilesAround.Count || CountFlagsAround(tile) != 0))
                 {
                     NavigateToTile(tile, quick);
                     EndGame = GameTurn(ConsoleKey.Spacebar);
                     return true;
                 }
-                if (tile.Covered && !tile.Mine)
+                if (tile.Covered && !tile.Mine && (CountCoveredAround(tile) != tile.TilesAround.Count || CountFlagsAround(tile) != 0))
                 {
                     NavigateToTile(tile, quick);
                     EndGame = GameTurn(ConsoleKey.Enter);
@@ -349,6 +430,24 @@ namespace GloriousMinesweeper
 
             return;
         }
+        public static bool PauseGame()
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
+            return PauseMenu.PauseGameMenu();
+        }
+        public static void SetLoaded(string[] SavedGame)
+        {
+            string[] parameters = SavedGame[3].Split(',');
+            string[] time = SavedGame[4].Split(';');
+            CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
+            CurrentTile = PlayedGame.Minefield[0, 0];
+            UncoveredTiles.ChangeTo(Int32.Parse(parameters[10]));
+            NumberOfFlags.ChangeTo(Int32.Parse(parameters[11]));
+            IncorrectFlags = Int32.Parse(parameters[12]);
+            ScoreMultiplier = Decimal.Parse(parameters[13]);
+            CompletionTime = new SpecialisedStopwatch(time[0], time[1]);
+            Labels[1] = new Border(new Coordinates(PlayedGame.Minefield[0, 0].Position, -2, -1), PlayedGame.VerticalTiles + 2, 2 * (PlayedGame.HorizontalTiles + 2), ConsoleColor.Black, ConsoleColor.White, false);
+        }
     }
-}    
-
+}  

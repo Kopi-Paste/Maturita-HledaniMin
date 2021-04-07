@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace GloriousMinesweeper
 {
@@ -15,14 +14,14 @@ namespace GloriousMinesweeper
         public GameMenu(string name, Difficulties difficulty)
         {
             Difficulty = difficulty;
-            Name = new PositionedText(name, ConsoleColor.Black, (Console.WindowWidth - name.Length) / 2, 0) ;
+            Name = new PositionedText(name, ConsoleColor.Black, (Console.WindowWidth - name.Length) / 2, 3) ;
             int mines = 5 * (int)Math.Pow((int)difficulty, 2) * ((int)difficulty + 1);
 
 
             GameSettings = new GameSetting[3];
-            GameSettings[0] = new GameSetting("Number of horizontal tiles", (int)difficulty * 10, false, false, 7);
-            GameSettings[1] = new GameSetting("Number of vertical tiles", (int)difficulty * 10, false, false, 9);
-            GameSettings[2] = new GameSetting("Number of mines", mines, false, false, 11);
+            GameSettings[0] = new GameSetting("Number of horizontal tiles", (int)difficulty * 10, false, false, 9);
+            GameSettings[1] = new GameSetting("Number of vertical tiles", (int)difficulty * 10, false, false, 11);
+            GameSettings[2] = new GameSetting("Number of mines", mines, false, false, 13);
             /*GameSettings[3] = new GameSetting("Covered tiles colour", 1, true, false, 13);
             GameSettings[4] = new GameSetting("Covered tiles secondary colour", 2, true, false, 15);
             GameSettings[5] = new GameSetting("Uncovered tiles colour", 3, true, false, 17);
@@ -39,14 +38,9 @@ namespace GloriousMinesweeper
         public void PrintMenu(bool higlightName)
         {
             DiffSwitcher.PrintMenuName(higlightName);
-
-            string secondLineText = "Game settings:";
-            string thirdLineText = "Use arrow keys to operate and enter to confirm";
-
-            PositionedText secondLine = new PositionedText(secondLineText, ConsoleColor.Black, (Console.WindowWidth - secondLineText.Length) / 2, 1);
-            PositionedText thirdLine = new PositionedText(thirdLineText, ConsoleColor.Black, (Console.WindowWidth - thirdLineText.Length) / 2, 2);
-            secondLine.Print(false);
-            thirdLine.Print(false);
+            DiffSwitcher.PrintGraphics(false);
+            /*string secondLineText = "Game settings:";
+            string thirdLineText = "Use arrow keys to operate and enter to confirm";*/
             foreach (GameSetting setting in GameSettings)
                 setting.Print(false);
             foreach (GameSetting colourSetting in DiffSwitcher.Colours)
@@ -124,6 +118,8 @@ namespace GloriousMinesweeper
                         break;
                     case ConsoleKey.Enter:
                         return 0;
+                    case ConsoleKey.Escape:
+                        return -2;
 
                 }
             /*ConsoleKey keypressed;
@@ -213,6 +209,10 @@ namespace GloriousMinesweeper
                 GameSettings[ChosenLine].Print(true);*/
                 
             } while (true);
+        }
+        public virtual void SwitchTo(int[] Parameters)
+        {
+            throw new NotImplementedException();
         }
     }
     public enum Difficulties

@@ -47,5 +47,9 @@ namespace GloriousMinesweeper
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Write("       ");
         }
+        public override string ToString()
+        {
+            return Number.ToString();
+        }
     }
 }

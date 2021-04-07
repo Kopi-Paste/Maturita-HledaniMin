@@ -4,30 +4,38 @@ namespace GloriousMinesweeper
 {
     class UncoveredTile : Tile
     {
-        public UncoveredTile(Tile originalTile)
+        public UncoveredTile(Tile originalTile, bool immediatePrint)
         {
             MinesAround = originalTile.MinesAround;
             Covered = false;
             Flag = false;
             Mine = originalTile.Mine;
-            if (originalTile.Color == GameControls.PlayedGame.Cover)
-                Color = GameControls.PlayedGame.Uncover;
-            else if (originalTile.Color == GameControls.PlayedGame.CoverSecondary)
-                Color = GameControls.PlayedGame.UncoverSecondary;
-            else if (originalTile.OriginalColor == GameControls.PlayedGame.Cover || originalTile.OriginalColor == GameControls.PlayedGame.Uncover)
-                Color = GameControls.PlayedGame.Uncover;
-            else if (originalTile.OriginalColor == GameControls.PlayedGame.CoverSecondary || originalTile.OriginalColor == GameControls.PlayedGame.UncoverSecondary)
-                Color = GameControls.PlayedGame.UncoverSecondary;
+            if (originalTile.Color == (ConsoleColor)DiffSwitcher.Colours[0].SettingValue.Number)
+                Color = (ConsoleColor)DiffSwitcher.Colours[2].SettingValue.Number;
+            else if (originalTile.Color == (ConsoleColor)DiffSwitcher.Colours[1].SettingValue.Number)
+                Color = (ConsoleColor)DiffSwitcher.Colours[3].SettingValue.Number;
+            else if (originalTile.OriginalColor == (ConsoleColor)DiffSwitcher.Colours[0].SettingValue.Number || originalTile.OriginalColor == (ConsoleColor)DiffSwitcher.Colours[2].SettingValue.Number)
+                Color = (ConsoleColor)DiffSwitcher.Colours[2].SettingValue.Number;
+            else if (originalTile.OriginalColor == (ConsoleColor)DiffSwitcher.Colours[1].SettingValue.Number || originalTile.OriginalColor == (ConsoleColor)DiffSwitcher.Colours[3].SettingValue.Number)
+                Color = (ConsoleColor)DiffSwitcher.Colours[3].SettingValue.Number;
             Position = originalTile.Position;
             MinefieldPosition = originalTile.MinefieldPosition;
             TilesAround = originalTile.TilesAround;
-            TilesAroundCalculator();
-            PrintTile();
+            /*Colours[0] = Covered tiles colour
+            Colours[1] = Covered tiles secondary colour
+            Colours[2] = Uncovered tiles colour
+            Colours[3] = Uncovered tiles secondary colour
+            Colours[4] = Flag colour
+            Colours[5] = Highlighted tile colour
+            Colours[6] = Text colour*/
+            //TilesAroundCalculator();
+            if (immediatePrint)
+                PrintTile();
             //GameControls.PlayedGame.Minefield[MinefieldPosition.Horizontal, MinefieldPosition.Vertical] = this;
-            foreach (Tile tile in TilesAround)
+            /*foreach (Tile tile in TilesAround)
             {
                 tile.MinesAroundCalculator();
-            }
+            }*/
         }
 
         public override void PrintTile()

@@ -13,6 +13,12 @@ namespace GloriousMinesweeper
                 GameSettings[chosenLine].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[1].SettingValue.Number, GameSettings[2].SettingValue.Number);
             Console.Clear();
             PrintMenu(false);   
+            
+        }
+        public CustomGameMenu(int[] Parameters) : base("Custom", Difficulties.Easy)
+        {
+            for (int x = 0; x < 3; x++)
+                GameSettings[x].SettingValue.ChangeTo(Parameters[x]);
         }
 
         public override int MenuAction()
@@ -148,5 +154,10 @@ namespace GloriousMinesweeper
             } while (true);
 
         }
+        /*public override void SwitchTo(int[] Parameters)
+        {
+            for (int x = 0; x < 3; x++)
+                GameSettings[x].SettingValue.ChangeTo(Parameters[x]);
+        }*/
     }
 }

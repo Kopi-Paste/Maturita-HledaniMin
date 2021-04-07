@@ -12,6 +12,7 @@ namespace GloriousMinesweeper
             Covered = true;
             Flag = false;
             Color = color;
+            OriginalColor = color;
             TilesAround = new List<Tile>();
             Position = new Coordinates(horizontal, vertical);
             MinefieldPosition = new Coordinates(x, y);
