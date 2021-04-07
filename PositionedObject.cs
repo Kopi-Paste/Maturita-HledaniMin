@@ -25,7 +25,7 @@ namespace GloriousMinesweeper
         {
             Background += backgroundChangeBy;
         }
-        public virtual void ColourChangeTo(int backgroundChangeTo)
+        public virtual void ChangeColour(int backgroundChangeTo)
         {
             Background = (ConsoleColor)backgroundChangeTo;
         }

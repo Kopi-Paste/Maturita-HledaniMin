@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Diagnostics;
 
 namespace GloriousMinesweeper
 {
@@ -15,6 +14,8 @@ namespace GloriousMinesweeper
             TakenColours = new List<ConsoleColor>();
             Console.CursorVisible = false;
             Console.WriteLine("Please fullscreen");
+            Console.WriteLine("Alt+Enter is highly recommended");
+            Console.WriteLine("It is not recommended to Alt+Tab during the game or to un-fullscreen the game");
             while (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
             {}
             Console.CursorVisible = false;

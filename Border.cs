@@ -7,7 +7,7 @@ namespace GloriousMinesweeper
         private Coordinates StartPoint { get; }
         private int Heigth { get; }
         private int Width { get; }
-        private ConsoleColor InsideColour { get; }
+        private ConsoleColor InsideColour { get; set; }
         private ConsoleColor BorderColour { get; }
         private bool PrintInside { get; }
         public Border(int StartPointHorizontal, int StartPointVertical, int height, int width, ConsoleColor inside, ConsoleColor border, bool filled)
@@ -137,6 +137,10 @@ namespace GloriousMinesweeper
                 }
             }
             Console.BackgroundColor = ConsoleColor.Black;
+        }
+        public void ChangeColour(int Colour)
+        {
+            InsideColour = (ConsoleColor)Colour;
         }
     }
 }

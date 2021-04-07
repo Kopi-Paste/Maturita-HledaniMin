@@ -32,7 +32,7 @@ namespace GloriousMinesweeper
             ScoreMultiplier = 1;
             Labels.Add(new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
             Labels.Add(new Border(new Coordinates(PlayedGame.Minefield[0, 0].Position, -2, -1), PlayedGame.VerticalTiles + 2, 2 * (PlayedGame.HorizontalTiles + 2), ConsoleColor.Black, ConsoleColor.White, false));
-            Labels.Add(new Border((Console.WindowWidth - 27), 2, 4, 22, ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new Border(Console.WindowWidth - 28, 2, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
             Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 26, 3));
             Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 23, 4));
             Labels.Add(new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
@@ -202,8 +202,20 @@ namespace GloriousMinesweeper
                         if (unpause)
                         {
                             PlayedGame.PrintMinefield();
+                            
+                            Labels[5] = new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[6] = new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
+                            Labels[7] = new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[8] = new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
+                            Labels[9] = new Border(Console.WindowWidth - 55, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true);
                             for (int x = 0; x < Labels.Count; x++)
+                            {
+                                if ((x > 9 && x < 14) || (x > 16 && x < 21) || (x > 25))
+                                    Labels[x].ChangeColour((int)PlayedGame.Uncover);
+                                else if (x > 10)
+                                    Labels[x].ChangeColour((int)PlayedGame.UncoverSecondary);
                                 Labels[x].Print(x < 2);
+                            }
                             CompletionTime.Start();
                         }
                         else

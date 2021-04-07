@@ -51,8 +51,8 @@ namespace GloriousMinesweeper
                 SettingValue.ChangeBy(change);
                 if (Colour)
                 {
-                    Setting.ColourChangeTo(SettingValue.Number);
-                    SettingValue.ColourChangeTo(SettingValue.Number);
+                    Setting.ChangeColour(SettingValue.Number);
+                    SettingValue.ChangeColour(SettingValue.Number);
                 }
                 else if (TextColour)
                 {
@@ -134,8 +134,8 @@ namespace GloriousMinesweeper
             SettingValue.ChangeTo(newValue);
             if (Colour)
             {
-                Setting.ColourChangeTo(newValue);
-                SettingValue.ColourChangeTo(newValue);
+                Setting.ChangeColour(newValue);
+                SettingValue.ChangeColour(newValue);
             }
             else
             {
