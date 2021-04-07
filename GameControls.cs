@@ -39,7 +39,7 @@ namespace GloriousMinesweeper
             Labels.Add(new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
             Labels.Add(new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
             Labels.Add(new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
-            Labels.Add(new Border(Console.WindowWidth - 55, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new Border(Console.WindowWidth - 54, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true));
             Labels.Add(new PositionedText("Uncover all tiles", PlayedGame.Uncover, 8, 12));
             Labels.Add(new PositionedText("without mines and", PlayedGame.Uncover, 8, 13));
             Labels.Add(new PositionedText("flag all tiles", PlayedGame.Uncover, 8, 14));
@@ -202,12 +202,12 @@ namespace GloriousMinesweeper
                         if (unpause)
                         {
                             PlayedGame.PrintMinefield();
-                            
+                            Labels[2] = (new Border(Console.WindowWidth - 28, 2, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
                             Labels[5] = new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
                             Labels[6] = new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
                             Labels[7] = new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
                             Labels[8] = new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
-                            Labels[9] = new Border(Console.WindowWidth - 55, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[9] = new Border(Console.WindowWidth - 54, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true);
                             for (int x = 0; x < Labels.Count; x++)
                             {
                                 if ((x > 9 && x < 14) || (x > 16 && x < 21) || (x > 25))

@@ -104,7 +104,7 @@ namespace GloriousMinesweeper
 
                 for (int y = 0; y != VerticalTiles; y++)
                 {
-                    Minefield[x, y] = new CoveredTile(false, currentColour, (Console.WindowWidth / 2 - HorizontalTiles + 2 * x), y + 3, x, y);
+                    Minefield[x, y] = new CoveredTile(false, currentColour, (Console.WindowWidth / 2 - HorizontalTiles + 2 * x), y + ((Console.WindowHeight - VerticalTiles) / 2), x, y);
                     //if (x == 0 && y == 0)
                       //  GameControls.PlayedGame.Minefield[0, 0] = Minefield[0, 0];
                     if (currentColour == Cover)
