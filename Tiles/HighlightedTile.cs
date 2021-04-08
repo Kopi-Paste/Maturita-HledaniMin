@@ -42,20 +42,26 @@ namespace GloriousMinesweeper
                 Console.Write(MinesAround);
             }
         }
-        public override int FlagTile()
+        public override int FlagTile(bool immediatePrint = true)
         {
             Flag = !Flag;
             Console.SetCursorPosition(Position.Horizontal, Position.Vertical);
             if (Flag)
             {
-                Console.BackgroundColor = GameControls.PlayedGame.Flag;
-                Console.Write("  ");
+                if (immediatePrint)
+                {
+                    Console.BackgroundColor = GameControls.PlayedGame.Flag;
+                    Console.Write("  ");
+                }
                 return 1;
             }
             else
             {
-                Console.BackgroundColor = GameControls.PlayedGame.Highlight;
-                Console.Write("  ");
+                if (immediatePrint)
+                {
+                    Console.BackgroundColor = GameControls.PlayedGame.Highlight;
+                    Console.Write("  ");
+                }
                 return -1;
             }
         }

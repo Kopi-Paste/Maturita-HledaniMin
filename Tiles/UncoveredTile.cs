@@ -49,7 +49,7 @@ namespace GloriousMinesweeper
             else
                 Console.Write(' ');
         }
-        public override int FlagTile()
+        public override int FlagTile(bool immediatePrint = true)
         {
             throw new NotImplementedException();
         }

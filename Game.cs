@@ -128,7 +128,7 @@ namespace GloriousMinesweeper
                 if (coordinates != "")
                 {
                     string[] position = coordinates.Split(',');
-                    Minefield[int.Parse(position[0]), int.Parse(position[1])].FlagTile();
+                    Minefield[int.Parse(position[0]), int.Parse(position[1])].FlagTile(false);
                 }
             }
             string[] mines = savedGame[1].Split(';');

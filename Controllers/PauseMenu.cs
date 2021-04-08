@@ -9,11 +9,13 @@ namespace GloriousMinesweeper
         private static int ChosenLabel { get; set; }
         private static int ChosenFile { get; set; }
         private static SpecialisedStopwatch CurrentTime { get; set; }
+        private static IGraphic[] Labels { get; set; }
+        private static PositionedText[] SwitchableLabels { get; set; }
         public static bool PauseGameMenu()
         {
             Console.Clear();
             CurrentTime = GameControls.CompletionTime;
-            Border PauseBigBorder = new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false);
+            Border PauseBigBorder = new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false);
             Border PauseSmallBorder = new Border(Console.WindowWidth / 2 - 30, 18, 9, 60, ConsoleColor.Black, ConsoleColor.Gray, false);
             PositionedText PausedGame = new PositionedText("Game is paused", ConsoleColor.Black, Console.WindowWidth / 2 - 7, 20);
             PositionedText Unpause = new PositionedText("Continue", ConsoleColor.Black, Console.WindowWidth / 2 - 27, 24);
@@ -23,15 +25,26 @@ namespace GloriousMinesweeper
             PositionedText Quit = new PositionedText("Quit", ConsoleColor.Black, Console.WindowWidth / 2 + 23, 24);
             string time = "Current time: " + CurrentTime.ToString();
             PositionedText Time = new PositionedText(time, ConsoleColor.Black, (Console.WindowWidth - time.Length) / 2, 22);
-            IGraphic[] Labels = { PauseBigBorder, PauseSmallBorder, PausedGame };
-            PositionedText[] SwitchableLabels = { Unpause, SaveGame, LoadGame, BackToMenu, Quit, Time };
+            //IGraphic[] Labels = { PauseBigBorder, PauseSmallBorder, PausedGame };
+            //PositionedText[] SwitchableLabels = { Unpause, SaveGame, LoadGame, BackToMenu, Quit, Time };
+            Labels = new IGraphic[3];
+            Labels[0] = PauseBigBorder;
+            Labels[1] = PauseSmallBorder;
+            Labels[2] = PausedGame;
+            SwitchableLabels = new PositionedText[6];
+            SwitchableLabels[0] = Unpause;
+            SwitchableLabels[1] = SaveGame; 
+            SwitchableLabels[2] = LoadGame; 
+            SwitchableLabels[3] = BackToMenu; 
+            SwitchableLabels[4] = Quit;
+            SwitchableLabels[5] = Time;
             ChosenLabel = 0;
             foreach (IGraphic label in Labels)
                 label.Print(true);
             ConsoleKey keypressed = 0;
             while (true)
             {
-                PausedGame.Print(false);
+                //PausedGame.Print(false);
                 for (int x = 0; x < 6; x++)
                 {
                     SwitchableLabels[x].Print(x == ChosenLabel);
@@ -99,6 +112,29 @@ namespace GloriousMinesweeper
                                 break;
                         }
                         break;
+                    case ConsoleKey.R:
+                        try
+                        {
+                            Console.Clear();
+                            foreach (IGraphic label in Labels)
+                                label.Print(true);
+                            for (int x = 0; x < 6; x++)
+                            {
+                                SwitchableLabels[x].Print(x == ChosenLabel);
+                            }
+                        }
+                        catch
+                        {
+                            Program.WaitForFix();
+                            Console.Clear();
+                            foreach (IGraphic label in Labels)
+                                label.Print(true);
+                            for (int x = 0; x < 6; x++)
+                            {
+                                SwitchableLabels[x].Print(x == ChosenLabel);
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -161,8 +197,21 @@ namespace GloriousMinesweeper
                 Console.SetCursorPosition(Console.WindowWidth / 2 + 8, 15);
                 Console.Write(new string(' ', 20));
                 Console.SetCursorPosition(Console.WindowWidth / 2 + 8, 15);
+                if ((((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight)))
+                {
+                    Program.WaitForFix();
+                    Console.Clear();
+                    foreach (IGraphic label in Labels)
+                        label.Print(true);
+                    for (int x = 0; x < 6; x++)
+                    {
+                        SwitchableLabels[x].Print(x == ChosenLabel);
+                    }
+                    (new PositionedText("Name your save: ", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 15)).Print(false);
+                }
                 SaveName = Console.ReadLine();
-                SaveName += ".txt";
+                if (SaveName != "")
+                    SaveName += ".txt";
                 if (File.Exists(System.IO.Path.Combine(Path, SaveName)))
                 {
                     (new PositionedText("Save with this name already exists", ConsoleColor.Black, Console.WindowWidth / 2 - 17, 16)).Print(false);

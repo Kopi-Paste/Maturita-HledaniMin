@@ -19,9 +19,9 @@ namespace GloriousMinesweeper
 
 
             GameSettings = new GameSetting[3];
-            GameSettings[0] = new GameSetting("Number of horizontal tiles", (int)difficulty * 10, false, false, 9);
-            GameSettings[1] = new GameSetting("Number of vertical tiles", (int)difficulty * 10, false, false, 11);
-            GameSettings[2] = new GameSetting("Number of mines", mines, false, false, 13);
+            GameSettings[0] = new GameSetting("Number of horizontal tiles", (int)difficulty * 10, false, false, 10);
+            GameSettings[1] = new GameSetting("Number of vertical tiles", (int)difficulty * 10, false, false, 12);
+            GameSettings[2] = new GameSetting("Number of mines", mines, false, false, 14);
             /*GameSettings[3] = new GameSetting("Covered tiles colour", 1, true, false, 13);
             GameSettings[4] = new GameSetting("Covered tiles secondary colour", 2, true, false, 15);
             GameSettings[5] = new GameSetting("Uncovered tiles colour", 3, true, false, 17);
@@ -55,7 +55,7 @@ namespace GloriousMinesweeper
             ConsoleKey keypressed;
             do
             {
-                PrintMenu(false);
+                //PrintMenu(false);
                 if (ChosenLine <= 2)
                     GameSettings[ChosenLine].Print(true);
                 else
@@ -120,7 +120,20 @@ namespace GloriousMinesweeper
                         return 0;
                     case ConsoleKey.Escape:
                         return -2;
-
+                    case ConsoleKey.R:
+                        try
+                        {
+                            Console.Clear();
+                            DiffSwitcher.PrintGraphics(true);
+                            PrintMenu(false);
+                        }
+                        catch
+                        {
+                            Console.SetCursorPosition(0, 0);
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.WriteLine("Please fullscreen using Alt+Enter, then use R to reprint");
+                        }
+                        break;
                 }
             /*ConsoleKey keypressed;
             do

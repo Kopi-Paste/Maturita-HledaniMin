@@ -67,7 +67,7 @@ namespace GloriousMinesweeper
         }
         
         public abstract void PrintTile();
-        public abstract int FlagTile();
+        public abstract int FlagTile(bool immediatePrint = true);
         public void ClearMine()
         {
             Mine = false;

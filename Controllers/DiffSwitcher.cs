@@ -5,10 +5,10 @@ namespace GloriousMinesweeper
 {
     static class DiffSwitcher
     {
-        public static GameSetting[] Colours;
-        public static GameMenu[] GameMenus;
-        private static List<IGraphic> Labels;
-        public static int ChosenMenu;
+        public static GameSetting[] Colours { get; private set; }
+        public static GameMenu[] GameMenus { get; private set; }
+        private static List<IGraphic> Labels { get; set; }
+        public static int ChosenMenu { get; private set; }
                 
         public static void StartMenu()
         {
@@ -136,6 +136,21 @@ namespace GloriousMinesweeper
                         break;
                     case ConsoleKey.Escape:
                         return null;
+                    case ConsoleKey.R:
+                        try
+                        {
+                            Console.Clear();
+                            PrintGraphics(true);
+                            GameMenus[ChosenMenu].PrintMenu(true);
+                        }
+                        catch
+                        {
+                            Program.WaitForFix();
+                            Console.Clear();
+                            PrintGraphics(true);
+                            GameMenus[ChosenMenu].PrintMenu(true);
+                        }
+                        break;
                 }
             } while (keypressed != ConsoleKey.Enter);
             int[] parameters = new int[10];
@@ -211,8 +226,8 @@ namespace GloriousMinesweeper
         {
             PositionedText secondLine = new PositionedText("Game settings:", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 4);
             PositionedText thirdLine = new PositionedText("Use arrow keys to operate and enter to confirm", ConsoleColor.Black, (Console.WindowWidth - 46) / 2, 5);
-            Border GameMenuBigBorder = new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false);
-            Border GameMenuSmallBorder = new Border(Console.WindowWidth / 2 - 37, 1, 32, 74, ConsoleColor.Black, ConsoleColor.White, false);
+            Border GameMenuBigBorder = new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false);
+            Border GameMenuSmallBorder = new Border(Console.WindowWidth / 2 - 37, 2, 31, 74, ConsoleColor.Black, ConsoleColor.White, false);
             Labels = new List<IGraphic>() { secondLine, thirdLine, GameMenuBigBorder, GameMenuSmallBorder };
             
             Colours = new GameSetting[7];

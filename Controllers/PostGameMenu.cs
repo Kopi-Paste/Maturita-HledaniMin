@@ -36,7 +36,7 @@ namespace GloriousMinesweeper
                 string secondMessage = "Your score is " + Score;
                 Labels.Add(new PositionedText(secondMessage, ConsoleColor.Black, (Console.WindowWidth - secondMessage.Length) / 2, 7));
             }
-            Labels.Add(new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
             if (won)
                 Labels.Add(new Border((Console.WindowWidth - firstMessage.Length) / 2 - 3, 3, 17, 46, ConsoleColor.Black, ConsoleColor.Gray, false));
             else
@@ -163,6 +163,39 @@ namespace GloriousMinesweeper
                     case ConsoleKey.DownArrow:
                         if (ChosenLabel != 3)
                             ChosenLabel++;
+                        break;
+                    case ConsoleKey.R:
+                        try
+                        {
+                            foreach (IGraphic label in Labels)
+                            {
+                                if (label == null)
+                                    continue;
+                                label.Print(label.GetType() == (typeof(Border)));
+                            }
+                            for (int x = 0; x < 4; x++)
+                            {
+                                if (SwitchableLabels[x] == null)
+                                    continue;
+                                SwitchableLabels[x].Print(x == ChosenLabel);
+                            }
+                        }
+                        catch
+                        {
+                            Program.WaitForFix();
+                            foreach (IGraphic label in Labels)
+                            {
+                                if (label == null)
+                                    continue;
+                                label.Print(label.GetType() == (typeof(Border)));
+                            }
+                            for (int x = 0; x < 4; x++)
+                            {
+                                if (SwitchableLabels[x] == null)
+                                    continue;
+                                SwitchableLabels[x].Print(x == ChosenLabel);
+                            }
+                        }
                         break;
                 }
             } while (keypressed != ConsoleKey.Enter);

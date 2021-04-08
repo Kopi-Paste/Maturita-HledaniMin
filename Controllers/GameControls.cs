@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace GloriousMinesweeper
 {
@@ -17,60 +16,59 @@ namespace GloriousMinesweeper
         public static SpecialisedStopwatch CompletionTime { get; set; }
         public static decimal ScoreMultiplier { get; private set; }
         private static bool GameAborted { get; set; }
-
         public static void SetDefault()
         {
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
             CurrentTile = PlayedGame.Minefield[0, 0];
             IncorrectFlags = 0;
-            UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 8, 3);
-            NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 8, 4);
+            UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 34, 6);
+            NumberOfFlags = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 34, 7);
             Labels = new List<IGraphic>();
             CompletionTime = new SpecialisedStopwatch("0", "0");
             EndGame = false;
             GameAborted = false;
             ScoreMultiplier = 1;
-            Labels.Add(new Border(0, 0, Console.WindowHeight, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false));
             Labels.Add(new Border(new Coordinates(PlayedGame.Minefield[0, 0].Position, -2, -1), PlayedGame.VerticalTiles + 2, 2 * (PlayedGame.HorizontalTiles + 2), ConsoleColor.Black, ConsoleColor.White, false));
-            Labels.Add(new Border(Console.WindowWidth - 28, 2, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
-            Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 26, 3));
-            Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 23, 4));
-            Labels.Add(new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
-            Labels.Add(new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
-            Labels.Add(new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
-            Labels.Add(new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
-            Labels.Add(new Border(Console.WindowWidth - 54, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true));
-            Labels.Add(new PositionedText("Uncover all tiles", PlayedGame.Uncover, 8, 12));
-            Labels.Add(new PositionedText("without mines and", PlayedGame.Uncover, 8, 13));
-            Labels.Add(new PositionedText("flag all tiles", PlayedGame.Uncover, 8, 14));
-            Labels.Add(new PositionedText("with them!", PlayedGame.Uncover, 8, 15));
-            Labels.Add(new PositionedText("Numbers on tiles", PlayedGame.UncoverSecondary, 8, 24));
-            Labels.Add(new PositionedText("indicate how many", PlayedGame.UncoverSecondary, 8, 25));
-            Labels.Add(new PositionedText("mines are around.", PlayedGame.UncoverSecondary, 8, 26));
-            Labels.Add(new PositionedText("Beaware, if you", PlayedGame.Uncover, 33, 12));
-            Labels.Add(new PositionedText("try to uncover", PlayedGame.Uncover, 33, 13));
-            Labels.Add(new PositionedText("tile with mine", PlayedGame.Uncover, 33, 14));
-            Labels.Add(new PositionedText("you will lose.", PlayedGame.Uncover, 33, 15));
-            Labels.Add(new PositionedText("If you have a tile", PlayedGame.UncoverSecondary, 33, 24));
-            Labels.Add(new PositionedText("marked by a flag", PlayedGame.UncoverSecondary, 33, 25));
-            Labels.Add(new PositionedText("you will not be", PlayedGame.UncoverSecondary, 33, 26));
-            Labels.Add(new PositionedText("able to uncover", PlayedGame.UncoverSecondary, 33, 27));
-            Labels.Add(new PositionedText("the tile.", PlayedGame.UncoverSecondary, 33, 28));
-            Labels.Add(new PositionedText("Game controls:", PlayedGame.Uncover, Console.WindowWidth - 52, 12));
-            Labels.Add(new PositionedText("Use arrow keys to move around", PlayedGame.Uncover, Console.WindowWidth - 52, 13));
-            Labels.Add(new PositionedText("Use Enter to uncover tile", PlayedGame.Uncover, Console.WindowWidth - 52, 15));
-            Labels.Add(new PositionedText("First uncover is 100 % safe", PlayedGame.Uncover, Console.WindowWidth - 52, 16));
-            Labels.Add(new PositionedText("Use Spacebar to flag/unflag tile", PlayedGame.Uncover, Console.WindowWidth - 52, 18));
-            Labels.Add(new PositionedText("Need help? Use H to get a hint", PlayedGame.Uncover, Console.WindowWidth - 52, 20));
-            Labels.Add(new PositionedText("Warning: Doing so in cases when it", PlayedGame.Uncover, Console.WindowWidth - 52, 21));
-            Labels.Add(new PositionedText("is not needed will lower your score", PlayedGame.Uncover, Console.WindowWidth - 52, 22));
-            Labels.Add(new PositionedText("Or you can use S to let the game solve itself", PlayedGame.Uncover, Console.WindowWidth - 52, 24));
-            Labels.Add(new PositionedText("Or Q to solve itself very very quickly", PlayedGame.Uncover, Console.WindowWidth - 52, 25));
-            Labels.Add(new PositionedText("You can also use Escape to pause the game", PlayedGame.Uncover, Console.WindowWidth - 52, 27));
-            Labels.Add(new PositionedText("or to stop auto-solve", PlayedGame.Uncover, Console.WindowWidth - 52, 28));
-            Labels.Add(new PositionedText("Try to solve the game as quickly as possible", PlayedGame.Uncover, Console.WindowWidth - 52, 30));
-            Labels.Add(new PositionedText("to achieve the highest score.", PlayedGame.Uncover, Console.WindowWidth - 52, 31));
-            Labels.Add(new PositionedText("Good Luck!", PlayedGame.Uncover, Console.WindowWidth - 52, 34));
+            Labels.Add(new Border(Console.WindowWidth - 54, 5, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
+            Labels.Add(new PositionedText("Uncovered Tiles:", ConsoleColor.Black, Console.WindowWidth - 52, 6));
+            Labels.Add(new PositionedText("Placed Flags:", ConsoleColor.Black, Console.WindowWidth - 52, 7));
+            Labels.Add(new Border(6, 16, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new Border(6, 28, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
+            Labels.Add(new Border(31, 16, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new Border(31, 28, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true));
+            Labels.Add(new Border(Console.WindowWidth - 54, 16, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true));
+            Labels.Add(new PositionedText("Uncover all tiles", PlayedGame.Uncover, 8, 18));
+            Labels.Add(new PositionedText("without mines and", PlayedGame.Uncover, 8, 19));
+            Labels.Add(new PositionedText("flag all tiles", PlayedGame.Uncover, 8, 20));
+            Labels.Add(new PositionedText("with them!", PlayedGame.Uncover, 8, 21));
+            Labels.Add(new PositionedText("Numbers on tiles", PlayedGame.UncoverSecondary, 8, 30));
+            Labels.Add(new PositionedText("indicate how many", PlayedGame.UncoverSecondary, 8, 31));
+            Labels.Add(new PositionedText("mines are around.", PlayedGame.UncoverSecondary, 8, 32));
+            Labels.Add(new PositionedText("Beaware, if you", PlayedGame.Uncover, 33, 18));
+            Labels.Add(new PositionedText("try to uncover", PlayedGame.Uncover, 33, 19));
+            Labels.Add(new PositionedText("tile with mine", PlayedGame.Uncover, 33, 20));
+            Labels.Add(new PositionedText("you will lose.", PlayedGame.Uncover, 33, 21));
+            Labels.Add(new PositionedText("If you have a tile", PlayedGame.UncoverSecondary, 33, 30));
+            Labels.Add(new PositionedText("marked by a flag", PlayedGame.UncoverSecondary, 33, 31));
+            Labels.Add(new PositionedText("you will not be", PlayedGame.UncoverSecondary, 33, 32));
+            Labels.Add(new PositionedText("able to uncover", PlayedGame.UncoverSecondary, 33, 33));
+            Labels.Add(new PositionedText("the tile.", PlayedGame.UncoverSecondary, 33, 34));
+            Labels.Add(new PositionedText("Game controls:", PlayedGame.Uncover, Console.WindowWidth - 52, 18));
+            Labels.Add(new PositionedText("Use arrow keys to move around", PlayedGame.Uncover, Console.WindowWidth - 52, 20));
+            Labels.Add(new PositionedText("Use Enter to uncover tile", PlayedGame.Uncover, Console.WindowWidth - 52, 22));
+            Labels.Add(new PositionedText("First uncover is 100 % safe", PlayedGame.Uncover, Console.WindowWidth - 52, 23));
+            Labels.Add(new PositionedText("Use Spacebar to flag/unflag tile", PlayedGame.Uncover, Console.WindowWidth - 52, 25));
+            Labels.Add(new PositionedText("Need help? Use H to get a hint", PlayedGame.Uncover, Console.WindowWidth - 52, 27));
+            Labels.Add(new PositionedText("Warning: Doing so in cases when it", PlayedGame.Uncover, Console.WindowWidth - 52, 28));
+            Labels.Add(new PositionedText("is not needed will lower your score", PlayedGame.Uncover, Console.WindowWidth - 52, 29));
+            Labels.Add(new PositionedText("Or you can use S to let the game solve itself", PlayedGame.Uncover, Console.WindowWidth - 52, 31));
+            Labels.Add(new PositionedText("Or Q to solve itself very very quickly", PlayedGame.Uncover, Console.WindowWidth - 52, 32));
+            Labels.Add(new PositionedText("You can also use Escape to pause the game", PlayedGame.Uncover, Console.WindowWidth - 52, 34));
+            Labels.Add(new PositionedText("or to stop auto-solve", PlayedGame.Uncover, Console.WindowWidth - 52, 35));
+            Labels.Add(new PositionedText("Try to solve the game as quickly as possible", PlayedGame.Uncover, Console.WindowWidth - 52, 37));
+            Labels.Add(new PositionedText("to achieve the highest score.", PlayedGame.Uncover, Console.WindowWidth - 52, 38));
+            Labels.Add(new PositionedText("Good Luck!", PlayedGame.Uncover, Console.WindowWidth - 52, 40));
         }
         
         public static bool GameWin(out decimal score, out SpecialisedStopwatch playTime)
@@ -147,7 +145,7 @@ namespace GloriousMinesweeper
         }
         public static bool GameTurn(ConsoleKey keypressed)
         {
-            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+            if (UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
             UncoveredTiles.Print(false);
@@ -202,12 +200,12 @@ namespace GloriousMinesweeper
                         if (unpause)
                         {
                             PlayedGame.PrintMinefield();
-                            Labels[2] = (new Border(Console.WindowWidth - 28, 2, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
-                            Labels[5] = new Border(6, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
-                            Labels[6] = new Border(6, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
-                            Labels[7] = new Border(31, 10, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
-                            Labels[8] = new Border(31, 22, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
-                            Labels[9] = new Border(Console.WindowWidth - 54, 10, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[2] = (new Border(Console.WindowWidth - 54, 5, 4, 23 + (int)Math.Floor(Math.Log10((PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines))), ConsoleColor.Black, ConsoleColor.Gray, false));
+                            Labels[5] = new Border(6, 16, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[6] = new Border(6, 28, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
+                            Labels[7] = new Border(31, 16, 10, 22, PlayedGame.Uncover, PlayedGame.Cover, true);
+                            Labels[8] = new Border(31, 28, 10, 22, PlayedGame.UncoverSecondary, PlayedGame.CoverSecondary, true);
+                            Labels[9] = new Border(Console.WindowWidth - 54, 16, 27, 50, PlayedGame.Uncover, PlayedGame.Cover, true);
                             for (int x = 0; x < Labels.Count; x++)
                             {
                                 if ((x > 9 && x < 14) || (x > 16 && x < 21) || (x > 25))
@@ -256,6 +254,21 @@ namespace GloriousMinesweeper
                                 UncoveredTiles.ChangeBy(1);
                         }
                         PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical] = CurrentTile;
+                        break;
+                    case ConsoleKey.R:
+                        try
+                        {
+                            PlayedGame.PrintMinefield();
+                            for (int x = 0; x < Labels.Count; x++)
+                                Labels[x].Print(x < 2);
+                        }
+                        catch
+                        {
+                            Program.WaitForFix();
+                            PlayedGame.PrintMinefield();
+                            for (int x = 0; x < Labels.Count; x++)
+                                Labels[x].Print(x < 2);
+                        }
                         break;
                 }
             }
