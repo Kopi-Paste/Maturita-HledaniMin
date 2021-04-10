@@ -5,38 +5,44 @@ namespace GloriousMinesweeper
 {
     static class DiffSwitcher
     {
-        public static GameSetting[] Colours { get; private set; }
-        public static GameMenu[] GameMenus { get; private set; }
-        private static List<IGraphic> Labels { get; set; }
-        public static int ChosenMenu { get; private set; }
+        ///Shrnutí
+        ///Statická třída DiffSwitcher umožňuje přepínat obtížnosti a také vytvořit obtížnost vlastní individuálním navolením počtu políček a min. Také umožňuje nastavit barvy ve hře, nastavení barev jsou společná pro všechny obtížnosti.
+        
+        public static GameSetting[] Colours { get; private set; } //Field ve kterém jsou nastavení barev, která jsou společná pro všechny obtížnosti
+        public static GameMenu[] GameMenus { get; private set; } //Field ve kterém jsou uloženy samotné obtížnosti
+        private static List<IGraphic> Labels { get; set; } //Field ve kterém jsou uloženy grafické objekty
+        public static int ChosenMenu { get; private set; } //Field který označuje zvolené menu
                 
         public static void StartMenu(bool resetColours)
         {
-            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
-                Program.WaitForFix();
-            GameMenus = new GameMenu[4];
-            GameMenus[0] = new GameMenu("Easy", Difficulties.Easy);
-            GameMenus[1] = new GameMenu("Medium", Difficulties.Medium);
-            GameMenus[2] = new GameMenu("Hard", Difficulties.Hard);
-            GameMenus[3] = null;
-            ChosenMenu = 0;
-            SetDefault(resetColours);
-            SwitchTo(0, true);
-            Game newGame = EnableSwitch();
-            if (newGame == null)
+            ///Shrnutí
+            ///Počáteční metoda menu. Zde se nastaví výchozí nastavení a menu se vytiskne
+             
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight)) //Nejprve zajistí, že je hra na celou obrazovku, jinak by mohly grafické objekty mít špatnou pozici.
+                Program.WaitForFix(); //Pokud není, počká se dokud to uživatel nenapraví
+            GameMenus = new GameMenu[4]; //Vytvoří se Array pro čtyři různá nastavení
+            GameMenus[0] = new GameMenu("Easy", Difficulties.Easy); //První (nulté) místo zabere lehká obtížnost
+            GameMenus[1] = new GameMenu("Medium", Difficulties.Medium); //Druhé (první) místo zabere střední obtížnost
+            GameMenus[2] = new GameMenu("Hard", Difficulties.Hard); //Třetí (druhé) místo zabere těžká obtížnost
+            GameMenus[3] = null; //Čtvrté (třetí) místo zůstane zatím prázdné, zde se později bude vytvářet vlastní nastavení (objekt třídy CustomGameMenu), které může uživatel upravovat
+            ChosenMenu = 0; //Výchozí menu je jednoduchá obtížnost, a proto se nastaví field ChosenMenu na nulu
+            SetDefault(resetColours); //Pokud je vstupní hodnota resetColours true, tedy pokud otevíráme menu nastavení hry poprvé, tak se zavolá metoda SetDefault, kde se nastaví prvotní nastavení pro barvy
+            SwitchTo(0, true); //Následně se zavolá metoda SwitchTo, která zobrazí menu Lehké obtížnosti a zvýrazní název menu, aby uživatel věděl, že nyní může přepínat mezi obtížnostmi
+            Game newGame = EnableSwitch(); //Nyní se zavolá metoda EnableSwitch, která umožní vybírat mezi obtížnostmi a vytvářet vlastní obtížnost. Tato metoda vrací objekt typu Game
+            if (newGame == null) //Pokud uživatel opustí metodu, aniž by hru vytvořil tak se vrátíme zpátky do prvního menu, kde je možné toto menu opět zobrazit nebo hru ukončit
                 return;
-            GameControls.PlayedGame = newGame;
-            Console.Clear();
-            bool gameWon;
-            bool UserWantsToPlayAgain;
-            do
+            GameControls.PlayedGame = newGame; //V opačném případě se do další statické třídy, tedy do GameControls načte hraná hra a bude možné již brzy ji začít hrát
+            Console.BackgroundColor = ConsoleColor.Black; 
+            Console.Clear(); //Menu se vymaže
+            bool UserWantsToPlayAgain; //Tento boolean nám bude určovat zda chce hrát hráč znovu
+            do //Začíná cyklus do while, který probíhá, dokud platí, že hráč chce hrát znovu
             {
-                if (GameControls.PlayedGame == null)
+                if (GameControls.PlayedGame == null) //Pokud se stane, že 
                     return;
                 GameControls.PlayedGame.PrintMinefield();
                 GameControls.PlayedGame.TilesAndMinesAroundCalculator();
                 GameControls.SetDefault();
-                gameWon = GameControls.Gameplay(out decimal score, out SpecialisedStopwatch playTime);
+                bool gameWon = GameControls.Gameplay(out decimal score, out SpecialisedStopwatch playTime);
                 if (score != -1)
                     UserWantsToPlayAgain = PostGameMenu.ShowMenu(score, gameWon, playTime);
                 else

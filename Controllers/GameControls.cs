@@ -107,11 +107,11 @@ namespace GloriousMinesweeper
             for (int x = 0; x < Labels.Count; x++)
                 Labels[x].Print(x < 2, Reprint);
             CompletionTime.Start();
-            do
+            while (!EndGame)
             {
                 EndGame = GameTurn();
-            } while (!EndGame);
-            if ((UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+            }
+            if ((UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines)) || ((NumberOfFlags.Number == PlayedGame.Mines) && IncorrectFlags == 0))
                 return GameWin(out score, out playTime);
             else if (GameAborted)
             {
@@ -338,7 +338,7 @@ namespace GloriousMinesweeper
         }
         public static bool Hint(bool quick)
         {
-            if (UncoveredTiles.Number == PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
+            if ((UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles) - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
             {
                 EndGame = true;
                 return true;

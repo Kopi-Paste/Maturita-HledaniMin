@@ -66,9 +66,9 @@ namespace GloriousMinesweeper
                 int otherValue = tiles / SettingValue.Number;
                 if (((SettingValue.Number + change) < 4 || (SettingValue.Number + change) > 50) || (((SettingValue.Number + change) * otherValue) < (mines + 20)))
                 { }
-                else if ((Setting.Text == "Number of horizontal tiles: ") && (SettingValue.Number + change) > (Console.WindowHeight - 2))
+                else if ((Setting.Text == "Number of horizontal tiles: ") && (SettingValue.Number + change) > (Console.WindowWidth - (2 * 56)))
                 { }
-                else if ((Setting.Text == "Number of vertical tiles: ") && (SettingValue.Number + change) > (Console.WindowWidth - (2 * 56)))
+                else if ((Setting.Text == "Number of vertical tiles: ") && (SettingValue.Number + change) > (Console.WindowHeight - 4))
                 { }
                 else
                     SettingValue.ChangeBy(change, Reprint);
