@@ -29,7 +29,7 @@ namespace GloriousMinesweeper
             BorderColour = border;
             PrintInside = filled;
         }
-        public void Print(bool Solid)
+        public void Print(bool Solid, Action Reprint)
         {
             /*Tuple<int, int> ChangeByTuple;
             for (int x = 0; x < Width; x++)
@@ -42,7 +42,7 @@ namespace GloriousMinesweeper
                             continue;
                         ChangeByTuple = new Tuple<int, int>(x, y);
                         Coordinates PrintThere = (StartPoint + ChangeByTuple);
-                        PrintThere.GoTo();
+                        PrintThere.GoTo(Reprint);
                         if (x == 0 || x == 1 || y == 0 || x == Width - 1 || x == Width - 2 || y == Heigth - 1)
                             Console.BackgroundColor = BorderColour;
                         else if (PrintInside)
@@ -57,7 +57,7 @@ namespace GloriousMinesweeper
                             continue;
                         ChangeByTuple = new Tuple<int, int>(x, y);
                         Coordinates PrintThere = (StartPoint + ChangeByTuple);
-                        PrintThere.GoTo();
+                        PrintThere.GoTo(Reprint);
                         if (x == 0 || y == 0 || x == Width - 1 || y == Heigth - 1)
                             Console.BackgroundColor = BorderColour;
                         else if (PrintInside)
@@ -91,7 +91,7 @@ namespace GloriousMinesweeper
                                 Console.BackgroundColor = BorderColour;
                         }
                         CurrentCoordinates = new Coordinates(StartPoint, x, y);
-                        CurrentCoordinates.GoTo();
+                        CurrentCoordinates.GoTo(Reprint);
                         Console.Write(' ');
                     }
                 }
@@ -99,23 +99,23 @@ namespace GloriousMinesweeper
             else
             {
                 Console.BackgroundColor = BorderColour;
-                StartPoint.GoTo();
+                StartPoint.GoTo(Reprint);
                 Console.Write(new string(' ', Width));
                 CurrentCoordinates = new Coordinates(StartPoint, 0, Heigth - 1);
-                CurrentCoordinates.GoTo();
+                CurrentCoordinates.GoTo(Reprint);
                 Console.Write(new string(' ', Width));
                 CurrentCoordinates = StartPoint;
                 for (int x = 0; x < Heigth - 1; x++)
                 {
                     CurrentCoordinates = new Coordinates(CurrentCoordinates, 0, 1);
-                    CurrentCoordinates.GoTo();
+                    CurrentCoordinates.GoTo(Reprint);
                     Console.Write(' ');
                 }
                 CurrentCoordinates = new Coordinates(StartPoint, Width - 1, 0);
                 for (int x = 0; x < Heigth - 1; x++)
                 {
                     CurrentCoordinates = new Coordinates(CurrentCoordinates, 0, 1);
-                    CurrentCoordinates.GoTo();
+                    CurrentCoordinates.GoTo(Reprint);
                     Console.Write(' ');
                 }
                 if (Solid)
@@ -124,14 +124,14 @@ namespace GloriousMinesweeper
                     for (int x = 0; x < Heigth - 1; x++)
                     {
                         CurrentCoordinates = new Coordinates(CurrentCoordinates, 0, 1);
-                        CurrentCoordinates.GoTo();
+                        CurrentCoordinates.GoTo(Reprint);
                         Console.Write(' ');
                     }
                     CurrentCoordinates = new Coordinates(StartPoint, Width - 2, 0);
                     for (int x = 0; x < Heigth - 1; x++)
                     {
                         CurrentCoordinates = new Coordinates(CurrentCoordinates, 0, 1);
-                        CurrentCoordinates.GoTo();
+                        CurrentCoordinates.GoTo(Reprint);
                         Console.Write(' ');
                     }
                 }

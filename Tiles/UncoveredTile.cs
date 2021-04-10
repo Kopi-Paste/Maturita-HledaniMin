@@ -40,7 +40,7 @@ namespace GloriousMinesweeper
 
         public override void PrintTile()
         {
-            Position.GoTo();
+            Position.GoTo(GameControls.Reprint);
             Console.BackgroundColor = Color;
             Console.ForegroundColor = GameControls.PlayedGame.Text;
             Console.Write(' ');

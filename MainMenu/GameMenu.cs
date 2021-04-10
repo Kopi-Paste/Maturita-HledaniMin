@@ -13,6 +13,10 @@ namespace GloriousMinesweeper
 
         public GameMenu(string name, Difficulties difficulty)
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+            {
+                Program.WaitForFix();
+            }
             Difficulty = difficulty;
             Name = new PositionedText(name, ConsoleColor.Black, (Console.WindowWidth - name.Length) / 2, 3) ;
             int mines = 5 * (int)Math.Pow((int)difficulty, 2) * ((int)difficulty + 1);
@@ -42,9 +46,9 @@ namespace GloriousMinesweeper
             /*string secondLineText = "Game settings:";
             string thirdLineText = "Use arrow keys to operate and enter to confirm";*/
             foreach (GameSetting setting in GameSettings)
-                setting.Print(false);
+                setting.Print(false, Reprint);
             foreach (GameSetting colourSetting in DiffSwitcher.Colours)
-                colourSetting.Print(false);
+                colourSetting.Print(false, Reprint);
         }
         public void ChooseLine(int line)
         {
@@ -57,25 +61,25 @@ namespace GloriousMinesweeper
             {
                 //PrintMenu(false);
                 if (ChosenLine <= 2)
-                    GameSettings[ChosenLine].Print(true);
+                    GameSettings[ChosenLine].Print(true, Reprint);
                 else
-                    DiffSwitcher.Colours[ChosenLine - 3].Print(true);
+                    DiffSwitcher.Colours[ChosenLine - 3].Print(true, Reprint);
                 keypressed = Console.ReadKey(true).Key;
                 switch (keypressed)
                 {
                     case ConsoleKey.UpArrow:
                         if (ChosenLine == 0)
                         {
-                            GameSettings[ChosenLine].Print(false);
+                            GameSettings[ChosenLine].Print(false, Reprint);
                             DiffSwitcher.PrintMenuName(true);
                             return 1;
                         }
                         else
                         {
                             if (ChosenLine <= 2)
-                                GameSettings[ChosenLine].Print(false);
+                                GameSettings[ChosenLine].Print(false, Reprint);
                             else
-                                DiffSwitcher.Colours[ChosenLine - 3].Print(false);
+                                DiffSwitcher.Colours[ChosenLine - 3].Print(false, Reprint);
                             ChosenLine--;
                             break;
                         }
@@ -83,9 +87,9 @@ namespace GloriousMinesweeper
                         if (ChosenLine != 9)
                         {
                             if (ChosenLine <= 2)
-                                GameSettings[ChosenLine].Print(false);
+                                GameSettings[ChosenLine].Print(false, Reprint);
                             else
-                                DiffSwitcher.Colours[ChosenLine - 3].Print(false);
+                                DiffSwitcher.Colours[ChosenLine - 3].Print(false, Reprint);
                             ChosenLine++;
                             break;
                         }
@@ -94,7 +98,7 @@ namespace GloriousMinesweeper
                         if (ChosenLine > 2)
                         {
                             Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
-                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(-1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number, Reprint);
                             Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
                         }
                         else
@@ -107,7 +111,7 @@ namespace GloriousMinesweeper
                         if (ChosenLine > 2)
                         {
                             Program.TakenColours.Remove((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
-                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number);
+                            DiffSwitcher.Colours[ChosenLine - 3].ChangeValue(1, ChosenLine, GameSettings[0].SettingValue.Number * GameSettings[0].SettingValue.Number, GameSettings[2].SettingValue.Number, Reprint);
                             Program.TakenColours.Add((ConsoleColor)DiffSwitcher.Colours[ChosenLine - 3].SettingValue.Number);
                         }
                         else
@@ -123,15 +127,12 @@ namespace GloriousMinesweeper
                     case ConsoleKey.R:
                         try
                         {
-                            Console.Clear();
-                            DiffSwitcher.PrintGraphics(true);
-                            PrintMenu(false);
+                            Reprint();
                         }
                         catch
                         {
-                            Console.SetCursorPosition(0, 0);
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.WriteLine("Please fullscreen using Alt+Enter, then use R to reprint");
+                            Program.WaitForFix();
+                            Reprint();
                         }
                         break;
                 }
@@ -222,6 +223,12 @@ namespace GloriousMinesweeper
                 GameSettings[ChosenLine].Print(true);*/
                 
             } while (true);
+        }
+        public void Reprint()
+        {
+            Console.Clear();
+            DiffSwitcher.PrintGraphics(true);
+            PrintMenu(false);
         }
         public virtual void SwitchTo(int[] Parameters)
         {

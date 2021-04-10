@@ -18,6 +18,8 @@ namespace GloriousMinesweeper
         private static string Path { get; set; }
         public static bool ShowMenu(decimal score, bool won, SpecialisedStopwatch PlayTime)
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
             GameWon = won;
@@ -135,13 +137,13 @@ namespace GloriousMinesweeper
             {
                 if (label == null)
                     continue;
-                label.Print(label.GetType() == (typeof(Border)));
+                label.Print(label.GetType() == (typeof(Border)), Reprint);
             }
             for (int x = 0; x < 4; x++)
             {
                 if (SwitchableLabels[x] == null)
                     continue;
-                SwitchableLabels[x].Print(x == ChosenLabel);
+                SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
             }
             ConsoleKey keypressed;
             do
@@ -150,7 +152,7 @@ namespace GloriousMinesweeper
                 {
                     if (SwitchableLabels[x] == null)
                         continue;
-                    SwitchableLabels[x].Print(x == ChosenLabel);
+                    SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
                 }
                 keypressed = Console.ReadKey(true).Key;
                 switch (keypressed)
@@ -167,34 +169,12 @@ namespace GloriousMinesweeper
                     case ConsoleKey.R:
                         try
                         {
-                            foreach (IGraphic label in Labels)
-                            {
-                                if (label == null)
-                                    continue;
-                                label.Print(label.GetType() == (typeof(Border)));
-                            }
-                            for (int x = 0; x < 4; x++)
-                            {
-                                if (SwitchableLabels[x] == null)
-                                    continue;
-                                SwitchableLabels[x].Print(x == ChosenLabel);
-                            }
+                            Reprint();
                         }
                         catch
                         {
                             Program.WaitForFix();
-                            foreach (IGraphic label in Labels)
-                            {
-                                if (label == null)
-                                    continue;
-                                label.Print(label.GetType() == (typeof(Border)));
-                            }
-                            for (int x = 0; x < 4; x++)
-                            {
-                                if (SwitchableLabels[x] == null)
-                                    continue;
-                                SwitchableLabels[x].Print(x == ChosenLabel);
-                            }
+                            Reprint();
                         }
                         break;
                 }
@@ -202,7 +182,7 @@ namespace GloriousMinesweeper
             switch (ChosenLabel)
             {
                 case 0:
-                    SwitchableLabels[0].Print(false);
+                    SwitchableLabels[0].Print(false, Reprint);
                     if (GameWon)
                     {
                         SaveHighscore();
@@ -212,7 +192,12 @@ namespace GloriousMinesweeper
                     }
                     else
                     {
+                        if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                            Program.WaitForFix();
                         GameControls.PlayedGame.PrintMinefield(true);
+                        (new Border(new Coordinates(GameControls.PlayedGame.Minefield[0, 0].Position, -2, -1), GameControls.PlayedGame.VerticalTiles + 2, 2 * (GameControls.PlayedGame.HorizontalTiles + 2), ConsoleColor.Black, ConsoleColor.White, false)).Print(true, Reprint);
+                        (new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false)).Print(true, Reprint);
+
                         Console.ReadKey();
                         Console.BackgroundColor = ConsoleColor.Black;
                         Console.Clear();
@@ -238,6 +223,8 @@ namespace GloriousMinesweeper
                             parameters[x] = DiffSwitcher.GameMenus[DiffSwitcher.ChosenMenu].GameSettings[x].SettingValue.Number;
                         else
                             parameters[x] = DiffSwitcher.Colours[x - 3].SettingValue.Number;
+                        if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                            Program.WaitForFix();
                         GameControls.PlayedGame = new Game(parameters);
                     }
                     return true;
@@ -250,7 +237,7 @@ namespace GloriousMinesweeper
         private static void SaveHighscore()
         {
             PositionedText nickname = new PositionedText("Enter your Nickname: ", ConsoleColor.Black, (Console.WindowWidth - 40) / 2, 21);
-            nickname.Print(true);
+            nickname.Print(true, Reprint);
             do
             {
                 Console.CursorVisible = true;
@@ -260,7 +247,7 @@ namespace GloriousMinesweeper
                 Nickname = Console.ReadLine();
                 if (Nickname.Contains("   ") || Nickname.Length > 50 || Nickname == "")
                 {
-                    (new PositionedText("Invalid Nickname!", ConsoleColor.Black, Console.WindowWidth / 2 - 9, 23)).Print(false);
+                    (new PositionedText("Invalid Nickname!", ConsoleColor.Black, Console.WindowWidth / 2 - 9, 23)).Print(false, Reprint);
                     Nickname = "";
                 }
             } while (Nickname == "");
@@ -288,6 +275,22 @@ namespace GloriousMinesweeper
             }
             Program.ShowLeaderboards();
             return;
+        }
+        private static void Reprint()
+        {
+            Console.Clear();
+            foreach (IGraphic label in Labels)
+            {
+                if (label == null)
+                    continue;
+                label.Print(label.GetType() == (typeof(Border)), Reprint);
+            }
+            for (int x = 0; x < 4; x++)
+            {
+                if (SwitchableLabels[x] == null)
+                    continue;
+                SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
+            }
         }
     }
 }

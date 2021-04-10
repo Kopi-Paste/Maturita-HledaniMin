@@ -32,7 +32,7 @@ namespace GloriousMinesweeper
 
         public override void PrintTile()
         {
-            Position.GoTo();
+            Position.GoTo(GameControls.Reprint);
             if (Flag)
                 Console.BackgroundColor = GameControls.PlayedGame.Flag;
             else

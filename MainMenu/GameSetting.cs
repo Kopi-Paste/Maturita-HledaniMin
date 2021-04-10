@@ -25,7 +25,7 @@ namespace GloriousMinesweeper
         }
 
 
-        public void ChangeValue(int change, int chosenLine, int tiles, int mines)
+        public void ChangeValue(int change, int chosenLine, int tiles, int mines, Action Reprint)
         {
             if (Colour || TextColour)
             {
@@ -38,17 +38,17 @@ namespace GloriousMinesweeper
                 }
                 if (SettingValue.Number + change >= 15)
                 {
-                    SettingValue.ChangeTo(0);
-                    ChangeValue(1, chosenLine, tiles, mines);
+                    SettingValue.ChangeTo(0, Reprint);
+                    ChangeValue(1, chosenLine, tiles, mines, Reprint);
                     return;
                 }
                 else if (SettingValue.Number + change <= 0)
                 {
-                    SettingValue.ChangeTo(15);
-                    ChangeValue(-1, chosenLine, tiles, mines);
+                    SettingValue.ChangeTo(15, Reprint);
+                    ChangeValue(-1, chosenLine, tiles, mines, Reprint);
                     return;
                 }
-                SettingValue.ChangeBy(change);
+                SettingValue.ChangeBy(change, Reprint);
                 if (Colour)
                 {
                     Setting.ChangeColour(SettingValue.Number);
@@ -59,15 +59,19 @@ namespace GloriousMinesweeper
                     Program.DefaultTextColour = (ConsoleColor)SettingValue.Number;
                     DiffSwitcher.GameMenus[DiffSwitcher.ChosenMenu].PrintMenu(false);
                 }
-                Print(true);
+                Print(true, Reprint);
             }
             else if (Setting.Text.EndsWith("tiles: "))
             {
                 int otherValue = tiles / SettingValue.Number;
                 if (((SettingValue.Number + change) < 4 || (SettingValue.Number + change) > 50) || (((SettingValue.Number + change) * otherValue) < (mines + 20)))
                 { }
+                else if ((Setting.Text == "Number of horizontal tiles: ") && (SettingValue.Number + change) > (Console.WindowHeight - 2))
+                { }
+                else if ((Setting.Text == "Number of vertical tiles: ") && (SettingValue.Number + change) > (Console.WindowWidth - (2 * 56)))
+                { }
                 else
-                    SettingValue.ChangeBy(change);
+                    SettingValue.ChangeBy(change, Reprint);
                 /*int otherValue = tiles / SettingValue.Number;
                 if ((SettingValue.Number + change) >= 4 && (SettingValue.Number + change) <= 50 && (SettingValue.Number + change) * otherValue >= (mines + 20))
                     SettingValue.ChangeBy(change);*/
@@ -77,7 +81,7 @@ namespace GloriousMinesweeper
                 if ((SettingValue.Number + change) < 2 || (SettingValue.Number + change) > (tiles - 20))
                 { }
                 else
-                    SettingValue.ChangeBy(change);
+                    SettingValue.ChangeBy(change, Reprint);
                 /*if ((SettingValue.Number + change) >= 2 && (SettingValue.Number + change) <= (tiles - 20))
                     SettingValue.ChangeBy(change);*/
             }
@@ -127,11 +131,11 @@ namespace GloriousMinesweeper
                     SettingValue.ChangeBy(change);
             }*/
         }
-        public void ChangeValueTo(int newValue)
+        public void ChangeValueTo(int newValue, Action Reprint)
         {
             if (!Colour && !TextColour)
                 return;
-            SettingValue.ChangeTo(newValue);
+            SettingValue.ChangeTo(newValue, Reprint);
             if (Colour)
             {
                 Setting.ChangeColour(newValue);
@@ -143,13 +147,13 @@ namespace GloriousMinesweeper
             }
 
         }
-        public void Print(bool highlight)
+        public void Print(bool highlight, Action Reprint)
         {
-            Setting.Print(highlight);
+            Setting.Print(highlight, Reprint);
             if (Colour || TextColour)
-                SettingValue.PrintWithConsoleColourEnum(highlight);
+                SettingValue.PrintWithConsoleColourEnum(highlight, Reprint);
             else
-                SettingValue.Print(highlight);
+                SettingValue.Print(highlight, Reprint);
         }
 
 

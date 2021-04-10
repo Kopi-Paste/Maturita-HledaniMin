@@ -11,9 +11,9 @@ namespace GloriousMinesweeper
         {
             Number = number;
         }
-        public void ChangeBy(int value)
+        public void ChangeBy(int value, Action Reprint)
         {
-            base.Print(false);
+            base.Print(false, Reprint);
             Console.BackgroundColor = ConsoleColor.Black;
             int numberOfDigits;
             if (Number == 0)
@@ -23,9 +23,9 @@ namespace GloriousMinesweeper
             Console.Write(new string(' ', numberOfDigits));
             Number += value;
         }
-        public void ChangeTo(int number)
+        public void ChangeTo(int number, Action Reprint)
         {
-            base.Print(false);
+            base.Print(false, Reprint);
             Console.BackgroundColor = ConsoleColor.Black;
             int numberOfDigits;
             if (Number == 0)
@@ -35,14 +35,14 @@ namespace GloriousMinesweeper
             Console.Write(new string(' ', numberOfDigits));
             Number = number;
         }
-        public override void Print(bool highlight)
+        public override void Print(bool highlight, Action Reprint)
         {
-            base.Print(highlight);
+            base.Print(highlight, Reprint);
             Console.Write(Number);
         }
-        public void PrintWithConsoleColourEnum(bool highlight)
+        public void PrintWithConsoleColourEnum(bool highlight, Action Reprint)
         {
-            base.Print(highlight);
+            base.Print(highlight, Reprint);
             Console.Write((ConsoleColor)Number);
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Write("       ");

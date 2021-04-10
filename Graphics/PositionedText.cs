@@ -19,9 +19,9 @@ namespace GloriousMinesweeper
         {
             Text = text;
         }*/
-        public override void Print(bool highlight)
+        public override void Print(bool highlight, Action Reprint)
         {
-            base.Print(highlight);
+            base.Print(highlight, Reprint);
             Console.Write(Text);
         }
         public override string ToString()

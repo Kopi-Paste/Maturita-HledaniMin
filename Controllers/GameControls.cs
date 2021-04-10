@@ -18,6 +18,8 @@ namespace GloriousMinesweeper
         private static bool GameAborted { get; set; }
         public static void SetDefault()
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
             CurrentTile = PlayedGame.Minefield[0, 0];
             IncorrectFlags = 0;
@@ -103,7 +105,7 @@ namespace GloriousMinesweeper
         public static bool Gameplay(out decimal score, out SpecialisedStopwatch playTime)
         {
             for (int x = 0; x < Labels.Count; x++)
-                Labels[x].Print(x < 2);
+                Labels[x].Print(x < 2, Reprint);
             CompletionTime.Start();
             do
             {
@@ -135,11 +137,13 @@ namespace GloriousMinesweeper
         }
         public static bool GameTurn()
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             if (UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
-            UncoveredTiles.Print(false);
-            NumberOfFlags.Print(false);
+            UncoveredTiles.Print(false, Reprint);
+            NumberOfFlags.Print(false, Reprint);
             ConsoleKey keypressed = Console.ReadKey(true).Key;
             return GameAction(keypressed);
         }
@@ -148,8 +152,8 @@ namespace GloriousMinesweeper
             if (UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return true;
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]);
-            UncoveredTiles.Print(false);
-            NumberOfFlags.Print(false);
+            UncoveredTiles.Print(false, Reprint);
+            NumberOfFlags.Print(false, Reprint);
             return GameAction(keypressed);
         }
         public static bool GameAction(ConsoleKey keypressed)
@@ -212,7 +216,7 @@ namespace GloriousMinesweeper
                                     Labels[x].ChangeColour((int)PlayedGame.Uncover);
                                 else if (x > 10)
                                     Labels[x].ChangeColour((int)PlayedGame.UncoverSecondary);
-                                Labels[x].Print(x < 2);
+                                Labels[x].Print(x < 2, Reprint);
                             }
                             CompletionTime.Start();
                         }
@@ -225,7 +229,7 @@ namespace GloriousMinesweeper
                     case ConsoleKey.Spacebar:
                         if (CurrentTile.Covered)
                         {
-                            NumberOfFlags.ChangeBy(CurrentTile.FlagTile());
+                            NumberOfFlags.ChangeBy(CurrentTile.FlagTile(), Reprint);
                             if (!CurrentTile.Mine && CurrentTile.Flag)
                                 IncorrectFlags += 1;
                             else if (!CurrentTile.Mine && !CurrentTile.Flag)
@@ -247,27 +251,23 @@ namespace GloriousMinesweeper
                             if (CurrentTile.MinesAround == 0)
                             {
                                 int automaticallyUnflaged = 0;
-                                UncoveredTiles.ChangeBy(UncoverTilesAround(CurrentTile));
-                                NumberOfFlags.ChangeBy(automaticallyUnflaged);
+                                UncoveredTiles.ChangeBy(UncoverTilesAround(CurrentTile), Reprint);
+                                NumberOfFlags.ChangeBy(automaticallyUnflaged, Reprint);
                             }
                             else
-                                UncoveredTiles.ChangeBy(1);
+                                UncoveredTiles.ChangeBy(1, Reprint);
                         }
                         PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical] = CurrentTile;
                         break;
                     case ConsoleKey.R:
                         try
                         {
-                            PlayedGame.PrintMinefield();
-                            for (int x = 0; x < Labels.Count; x++)
-                                Labels[x].Print(x < 2);
+                            Reprint();
                         }
                         catch
                         {
                             Program.WaitForFix();
-                            PlayedGame.PrintMinefield();
-                            for (int x = 0; x < Labels.Count; x++)
-                                Labels[x].Print(x < 2);
+                            Reprint();
                         }
                         break;
                 }
@@ -287,7 +287,7 @@ namespace GloriousMinesweeper
                     tilesUncovered += 1;
                     if (PlayedGame.Minefield[currentHorizontal, currentVertical].Flag)
                     {
-                        NumberOfFlags.ChangeBy(-1);
+                        NumberOfFlags.ChangeBy(-1, Reprint);
                         IncorrectFlags--;
                     }
                     PlayedGame.Minefield[currentHorizontal, currentVertical] =  new UncoveredTile(PlayedGame.Minefield[currentHorizontal, currentVertical], true);
@@ -455,6 +455,12 @@ namespace GloriousMinesweeper
 
             return;
         }
+        public static void Reprint()
+        {
+            PlayedGame.PrintMinefield();
+            for (int x = 0; x < Labels.Count; x++)
+                Labels[x].Print(x < 2, Reprint);
+        }
         public static bool PauseGame()
         {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -467,8 +473,8 @@ namespace GloriousMinesweeper
             string[] time = SavedGame[4].Split(';');
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1);
             CurrentTile = PlayedGame.Minefield[0, 0];
-            UncoveredTiles.ChangeTo(Int32.Parse(parameters[10]));
-            NumberOfFlags.ChangeTo(Int32.Parse(parameters[11]));
+            UncoveredTiles.ChangeTo(Int32.Parse(parameters[10]), Reprint);
+            NumberOfFlags.ChangeTo(Int32.Parse(parameters[11]), Reprint);
             IncorrectFlags = Int32.Parse(parameters[12]);
             ScoreMultiplier = Decimal.Parse(parameters[13]);
             CompletionTime = new SpecialisedStopwatch(time[0], time[1]);

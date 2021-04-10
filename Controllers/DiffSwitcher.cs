@@ -10,15 +10,17 @@ namespace GloriousMinesweeper
         private static List<IGraphic> Labels { get; set; }
         public static int ChosenMenu { get; private set; }
                 
-        public static void StartMenu()
+        public static void StartMenu(bool resetColours)
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             GameMenus = new GameMenu[4];
             GameMenus[0] = new GameMenu("Easy", Difficulties.Easy);
             GameMenus[1] = new GameMenu("Medium", Difficulties.Medium);
             GameMenus[2] = new GameMenu("Hard", Difficulties.Hard);
             GameMenus[3] = null;
             ChosenMenu = 0;
-            SetDefault();
+            SetDefault(resetColours);
             SwitchTo(0, true);
             Game newGame = EnableSwitch();
             if (newGame == null)
@@ -91,6 +93,7 @@ namespace GloriousMinesweeper
                         SwitchMenu(keypressed);
                         break;
                     case ConsoleKey.DownArrow:
+                        PrintMenuName(false);
                         int keypressedint = GameMenus[ChosenMenu].MenuAction();
                         /*if (keypressedint == -1)
                         {
@@ -139,16 +142,12 @@ namespace GloriousMinesweeper
                     case ConsoleKey.R:
                         try
                         {
-                            Console.Clear();
-                            PrintGraphics(true);
-                            GameMenus[ChosenMenu].PrintMenu(true);
+                            Reprint();
                         }
                         catch
                         {
                             Program.WaitForFix();
-                            Console.Clear();
-                            PrintGraphics(true);
-                            GameMenus[ChosenMenu].PrintMenu(true);
+                            Reprint();
                         }
                         break;
                 }
@@ -163,7 +162,7 @@ namespace GloriousMinesweeper
             }
             Console.Clear();
             PositionedText loadingSign = new PositionedText("Loading...", ConsoleColor.Black, (Console.WindowWidth - 10) / 2, 12);
-            loadingSign.Print(false);
+            loadingSign.Print(false, Reprint);
             return new Game(parameters);
             /*ConsoleKey keypressed;
             int keypressedint = 0;
@@ -222,7 +221,7 @@ namespace GloriousMinesweeper
                 }
             }*/
         }
-        public static void SetDefault()
+        public static void SetDefault(bool resetColours)
         {
             PositionedText secondLine = new PositionedText("Game settings:", ConsoleColor.Black, (Console.WindowWidth - 14) / 2, 4);
             PositionedText thirdLine = new PositionedText("Use arrow keys to operate and enter to confirm", ConsoleColor.Black, (Console.WindowWidth - 46) / 2, 5);
@@ -230,19 +229,22 @@ namespace GloriousMinesweeper
             Border GameMenuSmallBorder = new Border(Console.WindowWidth / 2 - 37, 2, 31, 74, ConsoleColor.Black, ConsoleColor.White, false);
             Labels = new List<IGraphic>() { secondLine, thirdLine, GameMenuBigBorder, GameMenuSmallBorder };
             
-            Colours = new GameSetting[7];
-            Colours[0] = new GameSetting("Covered tiles colour", 10, true, false, 17);
-            Colours[1] = new GameSetting("Covered tiles secondary colour", 2, true, false, 19);
-            Colours[2] = new GameSetting("Uncovered tiles colour", 9, true, false, 21);
-            Colours[3] = new GameSetting("Uncovered tiles secondary colour", 1, true, false, 23);
-            Colours[4] = new GameSetting("Flag colour", 12, true, false, 25);
-            Colours[5] = new GameSetting("Highlighted tile colour", 13, true, false, 27);
-            Colours[6] = new GameSetting("Text colour", 7, false, true, 29);
-            Program.DefaultTextColour = (ConsoleColor)Colours[6].SettingValue.Number;
-            Program.TakenColours.Clear();
-            foreach (GameSetting gameSetting in Colours)
+            if (resetColours)
             {
-                Program.TakenColours.Add((ConsoleColor)gameSetting.SettingValue.Number);
+                Colours = new GameSetting[7];
+                Colours[0] = new GameSetting("Covered tiles colour", 10, true, false, 17);
+                Colours[1] = new GameSetting("Covered tiles secondary colour", 2, true, false, 19);
+                Colours[2] = new GameSetting("Uncovered tiles colour", 9, true, false, 21);
+                Colours[3] = new GameSetting("Uncovered tiles secondary colour", 1, true, false, 23);
+                Colours[4] = new GameSetting("Flag colour", 12, true, false, 25);
+                Colours[5] = new GameSetting("Highlighted tile colour", 13, true, false, 27);
+                Colours[6] = new GameSetting("Text colour", 7, false, true, 29);
+                Program.DefaultTextColour = (ConsoleColor)Colours[6].SettingValue.Number;
+                Program.TakenColours.Clear();
+                foreach (GameSetting gameSetting in Colours)
+                {
+                    Program.TakenColours.Add((ConsoleColor)gameSetting.SettingValue.Number);
+                }
             }
             Console.Clear();
             PrintGraphics(true);
@@ -250,7 +252,7 @@ namespace GloriousMinesweeper
         public static void SetLoaded(string[] Parameters)
         {
             for (int x = 0; x < 7; x++)
-                Colours[x].ChangeValueTo(Int32.Parse(Parameters[x + 3]));
+                Colours[x].ChangeValueTo(Int32.Parse(Parameters[x + 3]), GameControls.Reprint);
             Program.TakenColours.Clear();
             foreach (GameSetting setting in Colours)
             {
@@ -259,16 +261,22 @@ namespace GloriousMinesweeper
         }
         public static void PrintMenuName(bool highlight)
         {
-            GameMenus[ChosenMenu].Name.Print(highlight);
+            GameMenus[ChosenMenu].Name.Print(highlight, Reprint);
         }
         public static void PrintGraphics(bool printBorders)
         {
             if (printBorders)
                 for (int x = 0; x < 4; x++)
-                    Labels[x].Print(x == 2);
+                    Labels[x].Print(x == 2, Reprint);
             else
                 for (int x = 0; x < 2; x++)
-                    Labels[x].Print(false);
+                    Labels[x].Print(false, Reprint);
+        }
+        private static void Reprint()
+        {
+            Console.Clear();
+            PrintGraphics(true);
+            GameMenus[ChosenMenu].PrintMenu(true);
         }
     }
 }

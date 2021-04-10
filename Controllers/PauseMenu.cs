@@ -11,8 +11,11 @@ namespace GloriousMinesweeper
         private static SpecialisedStopwatch CurrentTime { get; set; }
         private static IGraphic[] Labels { get; set; }
         private static PositionedText[] SwitchableLabels { get; set; }
+        private static List<PositionedText> FilesAsText { get; set; }
         public static bool PauseGameMenu()
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             Console.Clear();
             CurrentTime = GameControls.CompletionTime;
             Border PauseBigBorder = new Border(0, 1, Console.WindowHeight - 1, Console.WindowWidth, ConsoleColor.Black, ConsoleColor.Gray, false);
@@ -40,14 +43,14 @@ namespace GloriousMinesweeper
             SwitchableLabels[5] = Time;
             ChosenLabel = 0;
             foreach (IGraphic label in Labels)
-                label.Print(true);
+                label.Print(true, Reprint);
             ConsoleKey keypressed = 0;
             while (true)
             {
                 //PausedGame.Print(false);
                 for (int x = 0; x < 6; x++)
                 {
-                    SwitchableLabels[x].Print(x == ChosenLabel);
+                    SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
                 }
                 keypressed = Console.ReadKey(true).Key;
                 switch (keypressed)
@@ -71,7 +74,7 @@ namespace GloriousMinesweeper
                                 SaveTheGame();
                                 Console.Clear();
                                 foreach (IGraphic label in Labels)
-                                    label.Print(true);
+                                    label.Print(true, Reprint);
                                 break;
                             case 2:
                                 if (LoadTheGame())
@@ -98,7 +101,7 @@ namespace GloriousMinesweeper
                                     Console.BackgroundColor = ConsoleColor.Black;
                                     Console.Clear();
                                     foreach (IGraphic label in Labels)
-                                        label.Print(true);
+                                        label.Print(true, Reprint);
                                     break;
                                 }
                             case 3:
@@ -115,24 +118,12 @@ namespace GloriousMinesweeper
                     case ConsoleKey.R:
                         try
                         {
-                            Console.Clear();
-                            foreach (IGraphic label in Labels)
-                                label.Print(true);
-                            for (int x = 0; x < 6; x++)
-                            {
-                                SwitchableLabels[x].Print(x == ChosenLabel);
-                            }
+                            Reprint();
                         }
                         catch
                         {
                             Program.WaitForFix();
-                            Console.Clear();
-                            foreach (IGraphic label in Labels)
-                                label.Print(true);
-                            for (int x = 0; x < 6; x++)
-                            {
-                                SwitchableLabels[x].Print(x == ChosenLabel);
-                            }
+                            Reprint();
                         }
                         break;
                 }
@@ -189,7 +180,7 @@ namespace GloriousMinesweeper
                 return;
             }
             //Console.WriteLine("Name your save: ");
-            (new PositionedText("Name your save: ", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 15)).Print(false);
+            (new PositionedText("Name your save: ", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 15)).Print(false, Reprint);
             Console.CursorVisible = true;
             string SaveName;
             do
@@ -197,24 +188,23 @@ namespace GloriousMinesweeper
                 Console.SetCursorPosition(Console.WindowWidth / 2 + 8, 15);
                 Console.Write(new string(' ', 20));
                 Console.SetCursorPosition(Console.WindowWidth / 2 + 8, 15);
-                if ((((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight)))
+                Program.WaitForFix();
+                Console.Clear();
+                foreach (IGraphic label in Labels)
+                    label.Print(true, Reprint);
+                for (int x = 0; x < 6; x++)
                 {
-                    Program.WaitForFix();
-                    Console.Clear();
-                    foreach (IGraphic label in Labels)
-                        label.Print(true);
-                    for (int x = 0; x < 6; x++)
-                    {
-                        SwitchableLabels[x].Print(x == ChosenLabel);
-                    }
-                    (new PositionedText("Name your save: ", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 15)).Print(false);
+                    SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
                 }
+                if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                    Program.WaitForFix();
+                (new PositionedText("Name your save: ", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 15)).Print(false, Reprint);
                 SaveName = Console.ReadLine();
                 if (SaveName != "")
                     SaveName += ".txt";
                 if (File.Exists(System.IO.Path.Combine(Path, SaveName)))
                 {
-                    (new PositionedText("Save with this name already exists", ConsoleColor.Black, Console.WindowWidth / 2 - 17, 16)).Print(false);
+                    (new PositionedText("Save with this name already exists", ConsoleColor.Black, Console.WindowWidth / 2 - 17, 16)).Print(false, Reprint);
                     SaveName = "";
                 }
             } while (SaveName == "");
@@ -231,7 +221,7 @@ namespace GloriousMinesweeper
             try
             {
                 File.WriteAllLines(Path, ToSave);
-                (new PositionedText("Your game was saved succesfully.", ConsoleColor.Black, Console.WindowWidth / 2 - 16, 16)).Print(false);
+                (new PositionedText("Your game was saved succesfully.", ConsoleColor.Black, Console.WindowWidth / 2 - 16, 16)).Print(false, Reprint);
             }
             catch (Exception e)
             {
@@ -243,22 +233,27 @@ namespace GloriousMinesweeper
         }
         public static bool LoadTheGame()
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+            {
+                Program.WaitForFix();
+                Reprint();
+            }
             string Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper");
             Path = System.IO.Path.Combine(Path, "SavedGames");
             if (!Directory.Exists(Path))
             {
-                (new PositionedText("There are no saved games to be loaded.", ConsoleColor.Black, Console.WindowWidth / 2 - 19, 15)).Print(false);
+                (new PositionedText("There are no saved games to be loaded.", ConsoleColor.Black, Console.WindowWidth / 2 - 19, 15)).Print(false, Reprint);
                 Console.ReadKey(true);
                 return false;
             }
-            List<PositionedText> FilesAsText = new List<PositionedText>();
+            FilesAsText = new List<PositionedText>();
             string[] saveGameFiles = Directory.GetFiles(Path);
             for (int x = 0; x < saveGameFiles.Length; x++)
                 FilesAsText.Add(new PositionedText(System.IO.Path.GetFileNameWithoutExtension(saveGameFiles[x]), ConsoleColor.Black, Console.WindowWidth/2 - 10, 29+x));
             ConsoleKey keypressed = 0;
             ChosenFile = 0;
             for (int x = 0; x < FilesAsText.Count; x++)
-                FilesAsText[x].Print(x == ChosenFile);
+                FilesAsText[x].Print(x == ChosenFile, LoadFilesReprint);
             while (keypressed != ConsoleKey.Enter)
             {
                 keypressed = Console.ReadKey(true).Key;
@@ -274,15 +269,50 @@ namespace GloriousMinesweeper
                         break;
                     case ConsoleKey.Escape:
                         return false;
+                    case ConsoleKey.R:
+                        try
+                        {
+                            LoadFilesReprint();
+                        }
+                        catch
+                        {
+                            Program.WaitForFix();
+                            LoadFilesReprint();
+                        }
+                        break;
                 }
                 for (int x = 0; x < FilesAsText.Count; x++)
-                    FilesAsText[x].Print(x == ChosenFile);
+                    FilesAsText[x].Print(x == ChosenFile, Reprint);
             }
             GameControls.PlayedGame = new Game(File.ReadAllLines(saveGameFiles[ChosenFile]));
             GameControls.SetLoaded(File.ReadAllLines(saveGameFiles[ChosenFile]));
             GameControls.PlayedGame.TilesAndMinesAroundCalculator();
             return true;
 
+        }
+        private static void Reprint()
+        {
+            Console.Clear();
+            foreach (IGraphic label in Labels)
+                label.Print(true, Reprint);
+            for (int x = 0; x < 6; x++)
+            {
+                SwitchableLabels[x].Print(x == ChosenLabel, Reprint);
+            }
+        }
+        private static void LoadFilesReprint()
+        {
+            Console.Clear();
+            foreach (IGraphic Label in Labels)
+            {
+                Label.Print(true, LoadFilesReprint);
+            }
+            foreach (PositionedText Label in SwitchableLabels)
+            {
+                Label.Print(false, LoadFilesReprint);
+            }
+            for (int x = 0; x < FilesAsText.Count; x++)
+                FilesAsText[x].Print(x == ChosenFile, LoadFilesReprint);
         }
     }
 }

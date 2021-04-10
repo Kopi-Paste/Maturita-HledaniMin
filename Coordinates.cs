@@ -13,8 +13,13 @@ namespace GloriousMinesweeper
             Vertical = vertical;
         }
 
-        public void GoTo()
+        public void GoTo(Action Reprint)
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+            {
+                Program.WaitForFix();
+                Reprint();
+            }
             Console.SetCursorPosition(Horizontal, Vertical);
         }
         public override string ToString()

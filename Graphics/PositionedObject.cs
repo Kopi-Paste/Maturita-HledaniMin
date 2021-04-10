@@ -11,7 +11,7 @@ namespace GloriousMinesweeper
             Background = background;
             Position = new Coordinates(horizontal, vertical);
         }
-        public virtual void Print(bool highlighted)
+        public virtual void Print(bool highlighted, Action Reprint)
         {
             Console.CursorVisible = false;
             Console.BackgroundColor = Background;
@@ -19,7 +19,7 @@ namespace GloriousMinesweeper
                 Console.ForegroundColor = ConsoleColor.White;
             else
                 Console.ForegroundColor = Program.DefaultTextColour;
-            Position.GoTo();
+            Position.GoTo(Reprint);
         }
         public virtual void ColourChangeBy(int foregroundChangeBy, int backgroundChangeBy)
         {
