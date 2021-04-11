@@ -91,7 +91,7 @@ namespace GloriousMinesweeper
                         }
                         catch (ArgumentOutOfRangeException) //Pokud nastane situace, že něco by se mělo tisknout mimo obrazovku
                         {
-                            WaitForFix(); //Vyzve uživatele, aby zvětšil hru na celou obrazovku a nepustí fo dál dokud tak neučiní
+                            WaitForFix(); //Vyzve uživatele, aby zvětšil hru na celou obrazovku a nepustí ho dál dokud tak neučiní
                             Reprint(); //Znovu se pokusí vymazat menu a vytisknout jej znovu
                         }
                         break;

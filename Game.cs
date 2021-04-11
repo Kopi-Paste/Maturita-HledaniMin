@@ -5,25 +5,23 @@ namespace GloriousMinesweeper
 {
     class Game
     {
-        public int HorizontalTiles { get; private set; }
-        public int VerticalTiles { get; private set; }
+        ///Shrnutí
+        ///Třída Game vytváří hru. Jsou zde uloženy důležité parametry o hře
+        public int HorizontalTiles { get; } //Počet políček zleva doprava
+        public int VerticalTiles { get; } //Počet políček shora dolů
 
-        public int Mines { get; }
+        public int Mines { get; } //Počet min
 
-        public ConsoleColor Cover { get; private set; }
-        public ConsoleColor CoverSecondary { get; private set; }
-        
-        public ConsoleColor Uncover { get; private set; }
+        public ConsoleColor Cover { get; } //První barva neotočených políček
+        public ConsoleColor CoverSecondary { get; } //Druhá barva neotočených políček
+        public ConsoleColor Uncover { get; } //První barva otočených políček
+        public ConsoleColor UncoverSecondary { get; } //Druhá barva otočených políček
+        public ConsoleColor Highlight { get; } //Barva zvýrazněného políčka
+        public ConsoleColor Flag { get; } //Barva políček označených vlaječkou
+        public ConsoleColor Text { get; } //Barva textu
+        public Tile[,] Minefield { get; set; } //Herní plocha
 
-        public ConsoleColor UncoverSecondary { get; private set; }
-        public ConsoleColor Highlight { get; private set; }
-        public ConsoleColor Flag { get; private set; }
-        public ConsoleColor Text { get; private set; }
-
-        public Tile[,] Minefield { get; set; } 
-
-
-        public Game(int[] parameters)
+        public Game(int[] parameters) //Konstruktor, který vytvoří z parametrů z menu nastavení hry samotnou hru
         {
             HorizontalTiles = parameters[0];
             VerticalTiles = parameters[1];
@@ -34,51 +32,50 @@ namespace GloriousMinesweeper
             UncoverSecondary = (ConsoleColor)parameters[6];
             Flag = (ConsoleColor)parameters[7];
             Highlight = (ConsoleColor)parameters[8];
-            Text = (ConsoleColor)parameters[9];
-            Minefield = new Tile[HorizontalTiles, VerticalTiles];
-
-            int remainingMines = Mines;
-            int remainingTiles = HorizontalTiles * VerticalTiles;
-            ConsoleColor currentColour;
+            Text = (ConsoleColor)parameters[9]; //Nahrají se veškeré fieldy
+            Minefield = new Tile[HorizontalTiles, VerticalTiles]; //Vytvoří se prázdné minové pole
+            int remainingMines = Mines; //Nyní se pomocí třídy Random určí, která políčka budou mít miny
+            int remainingTiles = HorizontalTiles * VerticalTiles; //Máme dvě proměnné: Zbývající miny a zbývající políčka
+            ConsoleColor currentColour; //Také se každému políčku přiřadí jeho první barva
             Random rng = new Random();
             bool mine;
-
             for (int x = 0; x != HorizontalTiles; x++)
             {
                 if (x % 2 == 0)
-                    currentColour = Cover;
+                    currentColour = Cover; //Pokud jsme v lichém řádku, políčko úplně vlevo bude mít první barvu (Cover)
                 else
-                    currentColour = CoverSecondary;
+                    currentColour = CoverSecondary; //Pokud jsme v sudém, políčko bude mít druhou barvu (Cover Secondary)
 
                     for (int y = 0; y != VerticalTiles; y++)
                     {
-                        
-                        
-                        int mineDeterminator = rng.Next(remainingTiles);
-                        if (mineDeterminator < remainingMines)
+                        int mineDeterminator = rng.Next(remainingTiles); //Nyní se vygeneruje náhodné číslo od nuly do počtu zbývajících políček
+                        if (mineDeterminator < remainingMines) //Pokud je náhodné číslo nižší než počet zbývajících min,
                         {
-                            mine = true;
-                            remainingMines--;
+                            mine = true; //tak následující políčko bude mít minu,
+                            remainingMines--; //Samozřejmě se sníží počet zbývajících min a políček
                             remainingTiles--;
                         }
                         else
                         {
-                            mine = false;
-                            remainingTiles--;
+                            mine = false; //jinak následující políčko minu mít nebude
+                            remainingTiles--; //A sníží se jen počet zbývajících políček
                         }
-                        
-                       
-                        Minefield[x, y] = new CoveredTile(mine, currentColour, (Console.WindowWidth/2 - HorizontalTiles+2*x), y + ((Console.WindowHeight - VerticalTiles) / 2), x, y);
-                        if (currentColour == Cover)
+                        Minefield[x, y] = new CoveredTile(mine, currentColour, (Console.WindowWidth/2 - HorizontalTiles+2*x), y + ((Console.WindowHeight - VerticalTiles) / 2), x, y); //Na pozici x, y se vytvoří nové políčko s minou určenou náhodným generátorem, souřadnicemi x, y a souřadnicemi v Consoli, které jsou propočítany tak, aby se Minefield nacházel ve středu obrazovky
+                        if (currentColour == Cover) //nyní se změní currentColour, aby následující políčko mělo jinou barvu a tvořila se „šachovnice“
                             currentColour = CoverSecondary;
                         else
                             currentColour = Cover;
                     }
             }
         }
-        public Game(string[] savedGame)
+        public Game(string[] savedGame) //Konstruktor, který slouží k vytvoření hry z hry uložené v souboru .txt
         {
-            string[] parameters = savedGame[3].Split(',');
+            ///První řádek: Pozice umístěných vlaječek
+            ///Druhý řádek: Pozice min
+            ///Třetí řádek: Pozice již otočených políček
+            ///Čtvrtý řádek: Parametry hry
+            ///Pátý řádek: Současný čas
+            string[] parameters = savedGame[3].Split(','); //Ze čtvrtého řádku se přečtou parametry hry a zapíší se do fieldů
             HorizontalTiles = int.Parse(parameters[0]);
             VerticalTiles = int.Parse(parameters[1]);
             Mines = int.Parse(parameters[2]);
@@ -89,31 +86,28 @@ namespace GloriousMinesweeper
             Flag = (ConsoleColor)int.Parse(parameters[7]);
             Highlight = (ConsoleColor)int.Parse(parameters[8]);
             Text = (ConsoleColor)int.Parse(parameters[9]);
-            Program.DefaultTextColour = Text;
-            Minefield = new Tile[HorizontalTiles, VerticalTiles];
+            Program.DefaultTextColour = Text; //Barva textu v programu se také změní podle uložené hry 
+            Minefield = new Tile[HorizontalTiles, VerticalTiles]; //Vytvoří se prázdný Minefield
             ConsoleColor currentColour;
-            DiffSwitcher.SetLoaded(parameters);
-            //GameControls.PlayedGame.Resize(HorizontalTiles, VerticalTiles);
+            DiffSwitcher.SetLoaded(parameters); //Parametry se odešlou také do DiffSwitcheru, aby hráč, pokud se vrátí zpátky do nastavení, zde viděl tato nastavení
 
             for (int x = 0; x != HorizontalTiles; x++)
             {
                 if (x % 2 == 0)
                     currentColour = Cover;
                 else
-                    currentColour = CoverSecondary;
+                    currentColour = CoverSecondary; //Nastavení barev funguje naprosto stejně jako u prvního konstruktoru
 
                 for (int y = 0; y != VerticalTiles; y++)
                 {
-                    Minefield[x, y] = new CoveredTile(false, currentColour, (Console.WindowWidth / 2 - HorizontalTiles + 2 * x), y + ((Console.WindowHeight - VerticalTiles) / 2), x, y);
-                    //if (x == 0 && y == 0)
-                      //  GameControls.PlayedGame.Minefield[0, 0] = Minefield[0, 0];
+                    Minefield[x, y] = new CoveredTile(false, currentColour, (Console.WindowWidth / 2 - HorizontalTiles + 2 * x), y + ((Console.WindowHeight - VerticalTiles) / 2), x, y); //Nejprve se pokryje celý Minefield neotočenými políčkami
                     if (currentColour == Cover)
                         currentColour = CoverSecondary;
                     else
                         currentColour = Cover;
                 }
             }
-            string[] uncovered = savedGame[2].Split(';');
+            string[] uncovered = savedGame[2].Split(';'); //Poté se podle třetího řádku otočí políčka
             foreach (string coordinates in uncovered)
             {
                 if (coordinates != "")
@@ -122,7 +116,7 @@ namespace GloriousMinesweeper
                     Minefield[int.Parse(position[0]), int.Parse(position[1])] = new UncoveredTile(Minefield[int.Parse(position[0]), int.Parse(position[1])], false);
                 }
             }
-            string[] flagged = savedGame[0].Split(';');
+            string[] flagged = savedGame[0].Split(';'); //Podle prvního řádku se označí políčka vlaječkou
             foreach (string coordinates in flagged)
             {
                 if (coordinates != "")
@@ -131,7 +125,7 @@ namespace GloriousMinesweeper
                     Minefield[int.Parse(position[0]), int.Parse(position[1])].FlagTile(false);
                 }
             }
-            string[] mines = savedGame[1].Split(';');
+            string[] mines = savedGame[1].Split(';'); //A podle druhého řádku se umístí miny
             foreach (string coordinates in mines)
             {
                 if (coordinates != "")
@@ -140,12 +134,11 @@ namespace GloriousMinesweeper
                     Minefield[int.Parse(position[0]), int.Parse(position[1])].PlantMine();
                 }
             }
-            //string[] time = savedGame[4].Split(';');
-            //GameControls.SetLoaded(int.Parse(parameters[10]), int.Parse(parameters[11]), int.Parse(parameters[12]), decimal.Parse(parameters[13]), time[0], time[1]);
-
         }
         public void TilesAndMinesAroundCalculator()
         {
+            ///Shrnutí
+            ///U všech políček se spočítají okolní políčka a následně se spočítá, kolik má které políčko okolo sebe min
             foreach (Tile tile in Minefield)
                 tile.TilesAroundCalculator();
             foreach (Tile tile in Minefield)
@@ -154,67 +147,63 @@ namespace GloriousMinesweeper
 
         public void PrintMinefield(bool flagMines = false)
         {
-            Console.BackgroundColor = 0;
-            Console.Clear();
-            foreach (Tile tile in Minefield)
+            ///Shrnutí
+            ///Vytiskne celou hrací plochu
+            ///Přijímá boolean flagMines, který určuje zda se mají všechny miny označit vlaječkou (tedy zobrazit správné řešení (to se používá pouze v PostGameMenu)
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear(); //Nejprve se vymaže obrazovka
+            foreach (Tile tile in Minefield) //Následně se projede celý Minefield
             {
-                if (flagMines)
+                if (flagMines) //Pokud se mají vyznačit políčka s minami
                 {
-                    if (tile.Mine && !tile.Flag)
+                    if (tile.Mine && !tile.Flag) //Každé políčko s minou, které ještě nemá vlaječku, bude označeno valejčkou
                         tile.FlagTile();
-                    else if (!tile.Mine && tile.Flag)
+                    else if (!tile.Mine && tile.Flag) //Každé políčko, které minu nemá a má na sobě chybně vlaječku, bude odznačeno
                         tile.FlagTile();
                 }
-                tile.PrintTile();
+                tile.PrintTile(); //A každé políčko se vytiskne
             }
         }
         public void MoveMinesOut(Tile selectedTile, List<Tile> forbbidenTiles)
         {
-            int clearedMines = 0;
-            if (selectedTile.Mine)
+            ///Shrnutí
+            ///Tato metoda zajistí, že z políčka a seznamu políček budou odstraněny miny a budou přesunuty na jiná políčka, která ještě miny nemají
+            ///Tato metoda se používá pro bezpečné první otočení, aby se nemohlo stát, že hráč prohraje hned prvním tahem
+            int clearedMines = 0; //Do této proměnné se ukládá počet odstraněných min
+            if (selectedTile.Mine) //Pokud má vybrané políčko minu, tak se z nějmina odstraní a zvýší se počet odstraněných min o jedna
             {
                 Minefield[selectedTile.MinefieldPosition.Horizontal, selectedTile.MinefieldPosition.Vertical].ClearMine();
                 clearedMines++;
             }
-            foreach (Tile tile in forbbidenTiles)
+            foreach (Tile tile in forbbidenTiles) //Nyní se projedou všechna políčka okolo vybraného
             {
-                if (tile.Mine)
+                if (tile.Mine) //Pokud mají minu, tak je i odsud mina odstraněna a číslo se opět zvýši
                 {
                     Minefield[tile.MinefieldPosition.Horizontal, tile.MinefieldPosition.Vertical].ClearMine();
                     clearedMines++;
                 }
             }
-            while (clearedMines != 0)
+            while (clearedMines != 0) //Nyní se začnou miny znocu umisťovat. Tento while cyklus probíhá, dokud nejsou všechny miny umístěny
             {
                 Random rnd = new Random();
                 int horizontalPosition = 0;
-                int verticalPosition = 0;
+                int verticalPosition = 0; 
                 do
                 {
-                    horizontalPosition = rnd.Next(HorizontalTiles);
-                }
-                while (Math.Abs(horizontalPosition - selectedTile.MinefieldPosition.Horizontal) <= 1);
-                do
-                {
+                    horizontalPosition = rnd.Next(HorizontalTiles); //Nyní se budou náhodně generovat pozice
                     verticalPosition = rnd.Next(VerticalTiles);
                 }
-                while (Math.Abs(verticalPosition - selectedTile.MinefieldPosition.Vertical) <= 1);
-                if (!Minefield[horizontalPosition, verticalPosition].Mine)
-                {
-                    Minefield[horizontalPosition, verticalPosition].PlantMine();
-                    clearedMines--;
-                }
+                while ((Math.Abs(verticalPosition - selectedTile.MinefieldPosition.Vertical) <= 1 && Math.Abs(horizontalPosition - selectedTile.MinefieldPosition.Horizontal) <= 1) || Minefield[horizontalPosition, verticalPosition].Mine); //Pokud byla vybrána pozice v okolí vybraného políčka nebo pozice, na kterém už mina je, tak se bude pozice vybírat znova
+                Minefield[horizontalPosition, verticalPosition].PlantMine(); //Když je vybrána validní pozice, tak se na ni umístí mina
+                clearedMines--; //A sníží se počet zbývajících min k umístění
             }
-            TilesAndMinesAroundCalculator();
+            TilesAndMinesAroundCalculator(); //Nakonec se přepočítají znovu okolní políčka a miny, neboť se mohly změnit
         }
-        /*private void Resize(int NewHorizontal, int NewVertical)
-        {
-            HorizontalTiles = NewHorizontal;
-            VerticalTiles = NewVertical;
-        }*/
         public int[] GetParameters()
         {
-            int[] Parameters = new int[10];
+            ///Shrnutí
+            ///Tato metoda vrátí parametry této hry v arrayi intů
+            int[] Parameters = new int[10]; 
             Parameters[0] = HorizontalTiles;
             Parameters[1] = VerticalTiles;
             Parameters[2] = Mines;
@@ -225,10 +214,13 @@ namespace GloriousMinesweeper
             Parameters[7] = (int)Flag;
             Parameters[8] = (int)Highlight;
             Parameters[9] = (int)Text;
-            return Parameters;
+            return Parameters; //Všechny parametry se nahrají do arraye a ten se vrátí
         }
         public override string ToString()
         {
+            ///Shrnutí
+            ///Tato metoda dá dohromady parametry, převede je na string a vloží mezi ně čárky
+            ///Používá se k zápisu parametrů do .txt při ukládání hry
             string ToString = HorizontalTiles.ToString() + ',' + VerticalTiles.ToString() + ',' + Mines.ToString() + ',' + ((int)Cover).ToString() + ',' + ((int)CoverSecondary).ToString() + ',' + ((int)Uncover).ToString() + ',' + ((int)UncoverSecondary).ToString() + ',' + ((int)Flag).ToString() + ',' + ((int)Highlight).ToString() + ',' + ((int)Text).ToString() + ',' + GameControls.UncoveredTiles.ToString() + ',' + GameControls.NumberOfFlags.ToString() + ',' + GameControls.IncorrectFlags.ToString() + ',' + GameControls.ScoreMultiplier.ToString();
             return ToString;
         }
