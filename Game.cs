@@ -71,11 +71,12 @@ namespace GloriousMinesweeper
         public Game(string[] savedGame) //Konstruktor, který slouží k vytvoření hry z hry uložené v souboru .txt
         {
             ///První řádek: Pozice umístěných vlaječek
-            ///Druhý řádek: Pozice min
-            ///Třetí řádek: Pozice již otočených políček
-            ///Čtvrtý řádek: Parametry hry
-            ///Pátý řádek: Současný čas
-            string[] parameters = savedGame[3].Split(','); //Ze čtvrtého řádku se přečtou parametry hry a zapíší se do fieldů
+            ///Druhý řádek: Pozice umístěných otazníků
+            ///Třetí řádek: Pozice min
+            ///Čtvrtý řádek: Pozice již otočených políček
+            ///Pátý řádek: Parametry hry
+            ///Šestý řádek: Současný čas
+            string[] parameters = savedGame[4].Split(','); //Z pátého řádku se přečtou parametry hry a zapíší se do fieldů
             HorizontalTiles = int.Parse(parameters[0]);
             VerticalTiles = int.Parse(parameters[1]);
             Mines = int.Parse(parameters[2]);
@@ -107,7 +108,7 @@ namespace GloriousMinesweeper
                         currentColour = Cover;
                 }
             }
-            string[] uncovered = savedGame[2].Split(';'); //Poté se podle třetího řádku otočí políčka
+            string[] uncovered = savedGame[3].Split(';'); //Poté se podle čtvrtého řádku otočí políčka
             foreach (string coordinates in uncovered)
             {
                 if (coordinates != "")
@@ -122,10 +123,19 @@ namespace GloriousMinesweeper
                 if (coordinates != "")
                 {
                     string[] position = coordinates.Split(',');
-                    Minefield[int.Parse(position[0]), int.Parse(position[1])].FlagTile(false);
+                    Minefield[int.Parse(position[0]), int.Parse(position[1])].SetTileToFlag();
                 }
             }
-            string[] mines = savedGame[1].Split(';'); //A podle druhého řádku se umístí miny
+            string[] questioned = savedGame[1].Split(';');
+            foreach (string coordinates in questioned) //Podle druhého řádku se umístí ozazníčky
+            {
+                if (coordinates != "")
+                {
+                    string[] position = coordinates.Split(',');
+                    Minefield[int.Parse(position[0]), int.Parse(position[1])].SetTileToQuestionMark();
+                }
+            }
+            string[] mines = savedGame[2].Split(';'); //A podle třetího řádku se umístí miny
             foreach (string coordinates in mines)
             {
                 if (coordinates != "")
@@ -154,12 +164,9 @@ namespace GloriousMinesweeper
             Console.Clear(); //Nejprve se vymaže obrazovka
             foreach (Tile tile in Minefield) //Následně se projede celý Minefield
             {
-                if (flagMines) //Pokud se mají vyznačit políčka s minami
+                if (flagMines && tile.Mine && !tile.Flag) //Pokud se mají vyznačit políčka s minami
                 {
-                    if (tile.Mine && !tile.Flag) //Každé políčko s minou, které ještě nemá vlaječku, bude označeno valejčkou
-                        tile.FlagTile();
-                    else if (!tile.Mine && tile.Flag) //Každé políčko, které minu nemá a má na sobě chybně vlaječku, bude odznačeno
-                        tile.FlagTile();
+                    tile.SetTileToFlag();
                 }
                 tile.PrintTile(); //A každé políčko se vytiskne
             }
@@ -183,7 +190,7 @@ namespace GloriousMinesweeper
                     clearedMines++;
                 }
             }
-            while (clearedMines != 0) //Nyní se začnou miny znocu umisťovat. Tento while cyklus probíhá, dokud nejsou všechny miny umístěny
+            while (clearedMines != 0) //Nyní se začnou miny znovu umisťovat. Tento while cyklus probíhá, dokud nejsou všechny miny umístěny
             {
                 Random rnd = new Random();
                 int horizontalPosition = 0;

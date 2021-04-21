@@ -138,7 +138,10 @@ namespace GloriousMinesweeper
             ///Jeden herní tah, který vrací bool. Pokud vrátí true, tak to znamená, že se má hra ukončit. Jinak má hra pokračovat. True se vrátí pokud bylo otočeno políčko s minou nebo byla splněna podmínka pro výhru nebo se uživatel chce vrátit zpět do menu
             ///Toto přetížení přijímá vstupní klávesu, je určeno pro používání Hintu, kdy o stisknuté kjlávese rozhoduje program sám
             if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight)) //Na začátku každého tahu se zajistí, že hra je na celou obrazovku
+            {
                 Program.WaitForFix(); //Případně se počká, než to uživatel napraví
+                Reprint(); //A v případě potřeby se přetiskne herní plocha a ostatní grafiky
+            }
             if (UncoveredTiles.Number == (PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles - PlayedGame.Mines) || (NumberOfFlags.Number == PlayedGame.Mines && IncorrectFlags == 0))
                 return true; //Nejprve se ověří zda není splněna nějaká podmínka pro výhru
             CurrentTile = new HighlightedTile(PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical]); //Současné vybrané políčko se znovu vytvoří, aby získalo typ třídy HighlightedTile
@@ -296,6 +299,7 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Metoda, kterou využívá metoda Hint(). Tato metoda spočítá pro vložené políčko počet okolních otočených políček
+            tile.TilesAroundCalculator(); //Nově se přepočítají políčka okolo
             int coveredAround = 0; //V této proměnné se počítá počet otočených políček
             foreach (Tile tileAround in tile.TilesAround) //Projede se celý seznam políček okolo tohoto
             {
@@ -308,6 +312,7 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Metoda, kterou využívá metoda Hint(). Tato metoda spočítá pro vložené políčko počet okolních políček s vlaječkou
+            tile.TilesAroundCalculator(); //Nově se přepočítají políčka okolo
             int flagsAround = 0; //V této proměnné se počítá počet políček s vlaječkou
             foreach (Tile tileAround in tile.TilesAround) //Projede se celý seznam políček okolo tohoto
             {
@@ -402,7 +407,7 @@ namespace GloriousMinesweeper
                 
                 if (tile.Covered) //Zakrytá políčka neposkytují žádné informace, takže ty můžeme přeskočit
                     continue;
-                tile.TilesAroundCalculator(); //Abychom měli aktuální hodnoty, tak se přepočítají okolní políčka a počet okolních min
+                //tile.TilesAroundCalculator(); //Abychom měli aktuální hodnoty, tak se přepočítají okolní políčka a počet okolních min
                 if (CountCoveredAround(tile) == tile.MinesAround) //Pokud se počet zakrytých políček okolo rovná počtu min všechna tato políčka budou označena vlaječkou
                 {
                     for (int x = 0; x < tile.TilesAround.Count; x++) //Projedou se všechna políčka, co sousedí s tímto políčkem
@@ -411,6 +416,8 @@ namespace GloriousMinesweeper
                         if (!potentialFlagTile.Flag && potentialFlagTile.Covered)   //Pokud je políčko zakryté a nemá vlaječku
                         {
                             NavigateToTile(potentialFlagTile, quick);               //Naviguje se na dané políčko
+                            if (potentialFlagTile.Questionmark)
+                                EndGame = GameTurn(ConsoleKey.Spacebar);            //Pokud je na něm otazník, tak se odstraní otazník
                             EndGame = GameTurn(ConsoleKey.Spacebar);                //A poté se stiskne mezerník, čímž se umístí vlaječka
 
                             return false; //Hint v tomto případě nebyl nutný
@@ -434,13 +441,15 @@ namespace GloriousMinesweeper
             }
             foreach (Tile tile in PlayedGame.Minefield) //Pokud nejsme schopni určit další tah tímto způsobem, přejde se na druhý způsob, který už využívá informací, které nejsou hráči známé, ale programu samozřejmě ano. Hint v tomto případě je brán jako nutný (ačkoliv se někdy dá i v takovémto případě dá další tah určit, ovšem ne vždy)
             {
-                if (tile.Covered && tile.Mine && !tile.Flag && (CountCoveredAround(tile) != tile.TilesAround.Count || CountFlagsAround(tile) != -1)) //Nalezne se takové políčko, které je zakryté, má na sobě minu a nemá vlajku a zároveň má okolo sebe alespoň jednu vlajku nebo otočené políčko (aby toto políčko mohlo poskytnout hráči nějaké informace)
+                if (tile.Covered && tile.Mine && !tile.Flag && (CountCoveredAround(tile) != tile.TilesAround.Count)) //Nalezne se takové políčko, které je zakryté, má na sobě minu a nemá vlajku a zároveň má okolo sebe alespoň jednu vlajku nebo otočené políčko (aby toto políčko mohlo poskytnout hráči nějaké informace)
                 {
                     NavigateToTile(tile, quick); //Naviguje se na dané políčko
+                    if (tile.Questionmark)
+                        EndGame = GameTurn(ConsoleKey.Spacebar); //Pokud má políčko otazník, tak se odstraní otazníkregionalOR_l
                     EndGame = GameTurn(ConsoleKey.Spacebar); //A stiskne se mezerník
                     return true; //Hint v tomto případě byl nutný
                 }
-                if (tile.Covered && !tile.Mine && (CountCoveredAround(tile) != tile.TilesAround.Count || CountFlagsAround(tile) != -1)) //Podobný způsob, tentokrát hledáme políčko bez miny a místo označování vlajkou jej budeme otáčet
+                if (tile.Covered && !tile.Mine && (CountCoveredAround(tile) != tile.TilesAround.Count)) //Podobný způsob, tentokrát hledáme políčko bez miny a místo označování vlajkou jej budeme otáčet
                 {
                     NavigateToTile(tile, quick); //Naviguje se na dané políčko
                     EndGame = GameTurn(ConsoleKey.Enter); //A stiskne se Enter
@@ -490,8 +499,8 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Metoda, která do fieldů GameControls vloží načtené hodnoty
-            string[] parameters = SavedGame[3].Split(','); //Parametry jsou umístěny ve čtvrtém řádku uloženého souboru, ten je následně rozděleny podle čárek na jednotlivé parametry
-            string[] time = SavedGame[4].Split(';'); //Uběhlý čas je umístěn v pátém řádku uloženého souboru, dvě čísla jsou rozdělena středníkem
+            string[] parameters = SavedGame[4].Split(','); //Parametry jsou umístěny v pátém řádku uloženého souboru, ten je následně rozděleny podle čárek na jednotlivé parametry
+            string[] time = SavedGame[5].Split(';'); //Uběhlý čas je umístěn v šestém řádku uloženého souboru, dvě čísla jsou rozdělena středníkem
             CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1); //CurrentMinefieldPosition se restartuje a především se nově spočtou jeho maximální hodnoty
             CurrentTile = PlayedGame.Minefield[0, 0]; //CurrentTile se restartuje
             UncoveredTiles.ChangeTo(Int32.Parse(parameters[10]), Reprint); //Z parametrů se načte počet odkrytých políček a ten se také změní a přetiskne. Pokud při tištění není hra nastavena na celou obrazovku, počká se na opravu od uživatele, vymaže se Console a vytiskne se toto menu znovu od začátku

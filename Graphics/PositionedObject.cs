@@ -12,6 +12,8 @@ namespace GloriousMinesweeper
         public ConsoleColor Background { get; private set; } //Barva pozadí, na kterém má být daný objektvytištěn
         public PositionedObject(ConsoleColor background, int horizontal, int vertical) //Konstruktor vytvoří z dvou čísel Pozici pomocí konstruktoru Coordinates a zároveň uloží vloženou barvu do fieldu Background
         {
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             Background = background;
             Position = new Coordinates(horizontal, vertical);
         }

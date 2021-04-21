@@ -126,20 +126,27 @@ namespace GloriousMinesweeper
             ///Tato metoda ukládá hru do souboru .txt
             ///Tento soubor bude mít 5 řádků
             ///První řádek: Pozice umístěných vlaječek
-            ///Druhý řádek: Pozice min
-            ///Třetí řádek: Pozice již otočených políček
-            ///Čtvrtý řádek: Parametry hry
-            ///Pátý řádek: Současný čas
+            ///Druhý řádek: Pozice umístěných otazníků
+            ///Třetí řádek: Pozice min
+            ///Čtvrtý řádek: Pozice již otočených políček
+            ///Pátý řádek: Parametry hry
+            ///Šestý řádek: Současný čas
             string Flags = ""; //První řádek, do kterého se budou zapisovat umístěné vlajky
-            string Mines = ""; //Druhý řádek, kam se budou zapisovat miny
-            string Uncovered = ""; //Třetí řádek, kam se budou zapisovat odkrytá políčka
-            string Time = (CurrentTime.ElapsedMilliseconds.ToString() + ';' + CurrentTime.ElapsedTicks.ToString()); //Pátý řádek, kam se zapíše čas přes metodu SpecialisedStopwatch.ToString()
+            string Questionmarks = ""; //Druhý řádek, do kterého se budou zapisovat umístěné otazníky
+            string Mines = ""; //Teřtí řádek, kam se budou zapisovat miny
+            string Uncovered = ""; //Čtvrtý řádek, kam se budou zapisovat odkrytá políčka
+            string Time = (CurrentTime.ElapsedMilliseconds.ToString() + ';' + CurrentTime.ElapsedTicks.ToString()); //Šestý řádek, kam se zapíše čas přes metodu SpecialisedStopwatch.ToString()
             foreach (Tile tile in GameControls.PlayedGame.Minefield) //Projede se celý minefield
             {
                 if (tile.Flag) //Pokud má políčko valjku, zapíš se do prvního řádku
                 {
                     Flags += tile.MinefieldPosition; //Zapíše se pozice políčka přes metodu Coordinates.ToString() (Ta vrací horizontální pozici a vertikální pozici oddělené čárkou)
                     Flags += ';'; //Mezi jednotlivá políčka se zapíše středník
+                }
+                if (tile.Questionmark) //To samé proběhne i pro políčka s otazníky
+                {
+                    Questionmarks += tile.MinefieldPosition;
+                    Questionmarks += ';';
                 }
                 if (tile.Mine) //To samé proběhne i pro políčka s minami
                 {
@@ -152,8 +159,8 @@ namespace GloriousMinesweeper
                     Uncovered += ';';
                 }
             }
-            string Parameters = GameControls.PlayedGame.ToString(); //Do čtvrtého řádku se zapíší herní parametry přes metodu Game.ToString(), která vrátí všechny parametry oddělené čárkou
-            string[] ToSave = { Flags, Mines, Uncovered, Parameters, Time }; //Všechny řádky se připraví do arraye
+            string Parameters = GameControls.PlayedGame.ToString(); //Do pátého řádku se zapíší herní parametry přes metodu Game.ToString(), která vrátí všechny parametry oddělené čárkou
+            string[] ToSave = { Flags, Questionmarks, Mines, Uncovered, Parameters, Time }; //Všechny řádky se připraví do arraye
             string Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Minesweeper"); //Nyní začneme hledat v AppData složku Minsweeper/
             try //Pokud neexistuje pokusíme se ji vytvořit
             {

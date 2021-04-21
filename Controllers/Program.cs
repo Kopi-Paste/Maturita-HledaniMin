@@ -160,6 +160,7 @@ namespace GloriousMinesweeper
             { } //Tento while cyklus jej nepustí dál, dokud tak neučiní
             while (Console.KeyAvailable) //Tento while cyklus odstraní všechny klávesy ze streamu kláves, dokud se něco nachází ve streamu
                 Console.ReadKey(true); //Čte klávesy a zahazuje je
+            System.Threading.Thread.Sleep(50); //Pak ještě chvilku počkáme, aby se stihly aktualizovat hodnoty Console.WindowHeight a Console.WindowWidth
         }
     }
 }

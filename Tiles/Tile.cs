@@ -12,6 +12,7 @@ namespace GloriousMinesweeper
         public bool Covered { get; protected set; } //Boolean určující otočené/neotočené
         public bool Flag { get; protected set; } //Boolean označující označení vlaječkou
         public bool Mine { get; protected set; } //Boolean označující minu
+        public bool Questionmark { get; protected set; } //Boolean označující otazník
         public ConsoleColor Color { get; protected set; } //Současná barva políčka
         public ConsoleColor OriginalColor { get; protected set; } //Barva políčka před vyznačením
         public List<Tile> TilesAround { get; set; } //Seznam políček, se kterými toto políčko sousedí
@@ -80,6 +81,14 @@ namespace GloriousMinesweeper
         public void PlantMine() //Metoda, která umístí na políčko z minu, používá se k umístění min, které odstarní první bezpečné otočení
         {
             Mine = true;
+        }
+        public void SetTileToFlag()
+        {
+            Flag = true;
+        }
+        public void SetTileToQuestionMark()
+        {
+            Questionmark = true;
         }
     }
 }

@@ -17,6 +17,8 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Konstruktor, který přijme souřadnice startovního bodu jakožto dvě čísla
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             StartPoint = new Coordinates(StartPointHorizontal, StartPointVertical); //Zde se levý horní bod ještě vytvoří přes konstruktor Coordinates
             Heigth = height;
             Width = width;

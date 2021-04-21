@@ -15,6 +15,7 @@ namespace GloriousMinesweeper
             MinesAround = 0;
             Covered = true;
             Flag = false;
+            Questionmark = false;
             Color = color;
             OriginalColor = color;
             TilesAround = new List<Tile>();
@@ -27,6 +28,7 @@ namespace GloriousMinesweeper
             MinesAround = originalTile.MinesAround;
             Covered = true;
             Flag = originalTile.Flag;
+            Questionmark = originalTile.Questionmark;
             Color = originalTile.OriginalColor; //Všechny fieldy se přepisují z originálního políčka. Kromě barvy, která se získá z originální barvy originálního políčka
             TilesAround = originalTile.TilesAround;
             Position = originalTile.Position;
@@ -38,22 +40,28 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Vytiskne toto políčko na jeho pozici
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             Position.GoTo(GameControls.Reprint); //Přesuneme se na pozici tohoto políčka
             if (Flag) //Pokud má políčko vlaječku, vytiskne se barvou vlaečky
                 Console.BackgroundColor = GameControls.PlayedGame.Flag;
             else //Jinak se vytiskne svojí barvou
                 Console.BackgroundColor = Color;
-            Console.Write("  "); //Vytiskne se čtvereček (2 mezery)
+            if (Questionmark)
+                Console.Write(" ?");
+            else
+                Console.Write("  "); //Vytiskne se čtvereček (2 mezery)
         } 
         public override int FlagTile(bool immediatePrint = true)
         {
             ///Shrnutí
-            ///Metoda odstraní nebo umístí vlaječku (podle toho, jetsli na tomto tilu vlaječka je, nebo není
-            ///Dostává vstupní boolean, který určuje zda se má okamžitě políčko přetisknou s vyznačenou vlaječkou nebo naopak bez ní
+            ///Metoda odstraní nebo umístí vlaječku nebo otazník (podle toho, jestli na tomto tilu je vlaječka nebo otazník nebo nic)
+            ///Dostává vstupní boolean, který určuje zda se má okamžitě políčko přetisknou s vyznačenou vlaječkou nebo otazníkem nebo naopak bez nich
             ///Vrací int
             ///-1: Vlaječka byla odstraněna
-            ///+1: Vlaječka byla umístěna
-            Flag = !Flag; //Otočí se boolean
+            ///0: Počet vlaječek se vůbec nemění. Jedná se o přechod z otazníku na prázdné políčko
+            ///+1: Vlaječka byla umístěnas
+            /*Flag = !Flag; //Otočí se boolean
             if (Flag) //Pokud je nyní na políčku vlaječka, tak se vrátí 1
             {
                 if (immediatePrint) //Pokud se má zároveň i políčko okamžitě vytisknout,
@@ -73,6 +81,28 @@ namespace GloriousMinesweeper
                     Console.Write("  ");
                 }
                 return -1;
+            }*/
+            if (Flag) //Pokud na políčku je vlaječka, tak se vlaječka odstraní a nahradí se otazníkem
+            {
+                Flag = false;
+                Questionmark = true;
+                if (immediatePrint)
+                    PrintTile();
+                return -1;
+            }
+            else if (Questionmark) //Pokud je na políčku otazník, tak se otazník odstraní a políčkose nechá prázdné
+            {
+                Questionmark = false;
+                if (immediatePrint)
+                    PrintTile();
+                return 0;
+            }
+            else //Pokud je políčko prázdne (tedy není na něm ani otazník, ani vlaječka, tak se označí vlaječkou
+            {
+                Flag = true;
+                if (immediatePrint)
+                    PrintTile();
+                return +1;
             }
         }
     }

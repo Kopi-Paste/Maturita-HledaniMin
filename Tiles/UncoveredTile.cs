@@ -11,6 +11,7 @@ namespace GloriousMinesweeper
             MinesAround = originalTile.MinesAround; //Počet min okolo se nemění
             Covered = false; //toto políčko už nebude nikdy zakryté
             Flag = false; //Odkryté políčko nemůže být označeno vlaječkou. Pokud ji má, tak se odstraní
+            Questionmark = false; //Odkryté políčko nemůže mít otazník
             Mine = false; //Odkryté políčko nemůže mít minu. Jinak by hra skončila prohrou
             if (originalTile.Color == (ConsoleColor)DiffSwitcher.Colours[0].SettingValue.Number) //Pokud má původní políčko barvu Cover, bude mít toto políčko barvu Uncover
                 Color = (ConsoleColor)DiffSwitcher.Colours[2].SettingValue.Number; 
@@ -31,6 +32,8 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Vytisikne políčko
+            if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight))
+                Program.WaitForFix();
             Position.GoTo(GameControls.Reprint); //Přesune nás na pozici políčka
             Console.BackgroundColor = Color; //Barva pozadí se nastaví na barvu políčka
             Console.ForegroundColor = GameControls.PlayedGame.Text; //Barva textu se nastaví podle fieldu Program.DefaultTextColour
