@@ -249,18 +249,21 @@ namespace GloriousMinesweeper
                 Console.Write(new string(' ', 50)); //Vymaže následujících 50 charů, aby hráč mohl psát na volné místo
                 Console.SetCursorPosition(Console.WindowWidth / 2 + 1, 21); //Znovu umistí kurzor na pozici
                 Console.CursorVisible = true; //Zviditelní kurzor, aby bylo jasné, že se očekává zadávání textu
+                Console.ForegroundColor = ConsoleColor.White; //Nastaví se barva textu na bílou bvarvou
                 Nickname = Console.ReadLine(); //Přečte zadaný text a uloží jej do fieldu Nickname
-                if (Nickname.Contains("   ") || Nickname.Length > 50 || Nickname == "") //Pokud je přezdívka příliš dlouhá nebo příliš krátká a nebo obsahuje tři mezery (kterými se odděluje přezdívka od skóre), tak je uživateli zobrazeno, že přezdívka je neplatná a pokusí se jii zadat znovu
+                if (Nickname.Contains("   ") || Nickname.Length > 20 || Nickname == "") //Pokud je přezdívka příliš dlouhá nebo příliš krátká a nebo obsahuje tři mezery (kterými se odděluje přezdívka od skóre), tak je uživateli zobrazeno, že přezdívka je neplatná a pokusí se jii zadat znovu
                 {
-                    (new PositionedText("Invalid Nickname!", ConsoleColor.Black, Console.WindowWidth / 2 - 9, 23)).Print(false, Reprint);
+                    (new PositionedText("Invalid or too long nickname!", ConsoleColor.Black, Console.WindowWidth / 2 - 9, 23)).Print(false, Reprint);
                     Nickname = "";
                 }
             } while (Nickname == ""); //Tato metoda trvá dokud není zadána validní přezdívka
             Console.CursorVisible = false; //Znovu se skryje text, protože už se žádný text zadávat nebude
             try //Pokusíme se upravit seznam nejlepší výkonů
             {
+                int[] gameParameters = GameControls.PlayedGame.GetParameters(); //Získáme parametry dohrané hry
+                string entry = $"{Nickname}   {Score}   {gameParameters[0]}×{gameParameters[1]} minefield with {gameParameters[2]} mines in {GameControls.CompletionTime}"; //Ty se společně s Přezdívkou a skóre zapíší do stringu, který se bude zapisovat do tabulky
                 List<string> currentLeaderboard = new List<string>(File.ReadAllLines(Path)); //Nejprve se získá současný seznam
-                currentLeaderboard.Insert(Position - 1, Nickname + "   " + Score); //Na správnou pozici se vloží tento výkon
+                currentLeaderboard.Insert(Position - 1, entry); //Na správnou pozici se vloží tento string
                 if (currentLeaderboard.Count == 11) //Pokud přesáhne počet zapsaných výkonů 10
                     currentLeaderboard = currentLeaderboard.GetRange(0, 10); //Tak se odstraní poslední výkon
                 File.WriteAllLines(Path, currentLeaderboard); //Nový seznam se zapíše zpátky do souboru
