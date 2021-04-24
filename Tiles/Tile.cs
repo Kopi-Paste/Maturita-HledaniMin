@@ -86,6 +86,11 @@ namespace GloriousMinesweeper
         {
             Flag = true;
         }
+        public void SetTileToNoFlag()
+        {
+            Flag = false;
+        }
+
         public void SetTileToQuestionMark()
         {
             Questionmark = true;

@@ -233,7 +233,7 @@ namespace GloriousMinesweeper
                         PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical] = CurrentTile; //Nakonec se zapíší změny na políčko v Arrayi, který field CurrentTile reprezentuje
                         break;
                     case ConsoleKey.Enter: //Stlačení Enteru znamená pokus o otočení políčka
-                        if (CurrentTile.Covered && !CurrentTile.Flag) //Celý tento blok se může odehrát pouze pokud není políčko již odkryté a není označeno vlaječkou. Jednou z funkcí vlaječky je, že zabraňuje neúmyslnému otočení políčka
+                        if (CurrentTile.Covered && !CurrentTile.Flag) //Pokud políčko ještě není odkryté a není označeno vlaječkou. Jednou z funkcí vlaječky je, že zabraňuje neúmyslnému otočení políčka
                         {
                             if (UncoveredTiles.Number == 0) //Pokud zatím nebyla otočena žádná políčka (tedy pokud se jedná o první otočení), tak je zajištěno, aby bylo bezpečné
                             {
@@ -245,10 +245,16 @@ namespace GloriousMinesweeper
                             CurrentTile = new UncoveredTile(CurrentTile, true); //V opačném případě se dané políčko změní na typ UncoveredTile
                             if (CurrentTile.MinesAround == 0) //Pokud dané políčko má okolo sebe nula min, tak se automaticky otočí všechna okolní políčka
                             {
-                                UncoveredTiles.ChangeBy(UncoverTilesAround(CurrentTile), Reprint); //To zajišťuje metoda UncoverTilesAround. Ta kromě otáčení políček také vrací počet otočených políček a okamžitě o něj mění field UncoveredTiles a ten se nakonec znovu vytiskne. Pokud při tištění není hra nastavena na celou obrazovku, počká se na opravu od uživatele, vymaže se Console a vytisknou se grafiky a hrací plocha
+                                UncoveredTiles.ChangeBy(UncoverAllTilesAround(CurrentTile), Reprint); //To zajišťuje metoda UncoverTilesAround. Ta kromě otáčení políček také vrací počet otočených políček a okamžitě o něj mění field UncoveredTiles a ten se nakonec znovu vytiskne. Pokud při tištění není hra nastavena na celou obrazovku, počká se na opravu od uživatele, vymaže se Console a vytisknou se grafiky a hrací plocha
                             }
                             else
                                 UncoveredTiles.ChangeBy(1, Reprint); //V ostatních případech se field UncoveredTiles změní o jedna a znovu vytiskne. Pokud při tištění není hra nastavena na celou obrazovku, počká se na opravu od uživatele, vymaže se Console a vytisknou se grafiky a hrací plocha
+                        }
+                        else if (!CurrentTile.Covered && CountFlagsAround(CurrentTile) == CurrentTile.MinesAround) //Pokud políčko je odkryté, může se zde uplatnit automatické otočení okolních políček. To může proběhnout pokud se shoduje počet min okolo s počtem vlajek okolo
+                        {
+                            UncoveredTiles.ChangeBy(UncoverTilesAroundWithoutFlags(CurrentTile, out bool UncoveredMine), Reprint);
+                            if (UncoveredMine)
+                                return true;
                         }
                         PlayedGame.Minefield[CurrentMinefieldPosition.Horizontal, CurrentMinefieldPosition.Vertical] = CurrentTile; //Nakonec se zapíší změny na políčko v Arrayi, který field CurrentTile reprezentuje
                         break;
@@ -268,10 +274,10 @@ namespace GloriousMinesweeper
             return false;
         }
         
-        public static int UncoverTilesAround(Tile UncoverAround)
+        public static int UncoverAllTilesAround(Tile UncoverAround)
         {
             ///Shrnutí
-            ///Tato metoda otočí všechna políčka okolo daného políčka. Pokud některé z těchto políček okolo sebe také nemá žádnouminu, zavolá se rekurzivně tato metoda.
+            ///Tato metoda otočí všechna políčka okolo daného políčka. Pokud některé z těchto políček okolo sebe také nemá žádnou minu, zavolá se rekurzivně tato metoda znovu.
             ///Tato metoda vrací int, který počítá kolik políček bylo tímto způsobem otočeno
             int tilesUncovered = 0; //V této proměnné se počítá počet otočených políček
             for (int x = 0; x < UncoverAround.TilesAround.Count; x++) //Projede se celý seznam UncoverAround.TilesAround (kde jsou všechna sousední políčka)
@@ -289,11 +295,42 @@ namespace GloriousMinesweeper
                     PlayedGame.Minefield[currentHorizontal, currentVertical] =  new UncoveredTile(PlayedGame.Minefield[currentHorizontal, currentVertical], true); //Zde dochází pomocí konstruktoru k samotnému otočení
                     if (PlayedGame.Minefield[currentHorizontal, currentVertical].MinesAround == 0) //Pokud toto políčko okolo sebe nemá žádnou minu znovu se zavolá tato metoda
                     {
-                        tilesUncovered += UncoverTilesAround(PlayedGame.Minefield[currentHorizontal, currentVertical]); //Tentokrát se jako Tile UncoverAround vloží políčko se současnými souřadnicemi Počet otočenných políček wse zvýší o počet políček, který se otočí okolo nového políčka
+                        tilesUncovered += UncoverAllTilesAround(PlayedGame.Minefield[currentHorizontal, currentVertical]); //Tentokrát se jako Tile UncoverAround vloží políčko se současnými souřadnicemi Počet otočených políček se zvýší o počet políček, který se otočí okolo nového políčka
                     }
                 }
             }
             return tilesUncovered; //Když se otočí vše co má, vrátí se počet otočených políček
+        }
+        public static int UncoverTilesAroundWithoutFlags(Tile UncoverAround, out bool UncoveredMine)
+        {
+            ///Shrnutí
+            ///Tato metoda otočí všechna políčka okolo daného políčka, které nemají vlajku. Pokud některé z těchto políček má okolo sebe nula min, zavolá se na něm také metoda UncoverAllTilesAround
+            ///Tato metoda vrací int, který pořítá, kolik bylo takto otočeno políček
+            ///Kromě toho vrací také bool jestli byla odkryta mina. To se může stát, pokud byly vlajky špatně umístěny
+            int tilesUncovered = 0; //V této proměnné se počítá počet otočených políček
+            for (int x = 0; x < UncoverAround.TilesAround.Count; x++) //Projede se celý seznam UncoverAround.TilesAround (kde jsou všechna sousední políčka), stejně jako u metody UncoverAllTilesAround
+            {
+                int currentHorizontal = UncoverAround.TilesAround[x].MinefieldPosition.Horizontal;
+                int currentVertical = UncoverAround.TilesAround[x].MinefieldPosition.Vertical;
+                if (PlayedGame.Minefield[currentHorizontal, currentVertical].Covered && !PlayedGame.Minefield[currentHorizontal, currentVertical].Flag) //Nyní, kromě toho, jestli jsou políčka neotočená ověřujeme také jestli nemají vlajku
+                {
+                    if (PlayedGame.Minefield[currentHorizontal, currentVertical].Mine) //Pokud má některé z těchto políček minu a my bychom ji vlastně chtěli otočit, vrátí se bool, že byla odkryta mina a ukončí se hra prohrou
+                    {
+                        UncoveredMine = true;
+                        return tilesUncovered;
+                    }
+                    else //Jinak se políčko normálně otočí pomocí konstruktoru
+                    {
+                        PlayedGame.Minefield[currentHorizontal, currentVertical] = new UncoveredTile(PlayedGame.Minefield[currentHorizontal, currentVertical], true); //Zde dochází pomocí konstruktoru k samotnému otočení
+                        if (PlayedGame.Minefield[currentHorizontal, currentVertical].MinesAround == 0) //Pokud některé z těchto políček nemá žádnou minu, zavolá se mmetoda UncoverAllTilesAround, aby otočila políčka okolo něj. Int, který vrací tato metoda se přičte k tilesUncovered, který budeme brzy vracet
+                        {
+                            tilesUncovered += UncoverAllTilesAround(PlayedGame.Minefield[currentHorizontal, currentVertical]);
+                        }
+                    }
+                }
+            }
+            UncoveredMine = false;
+            return tilesUncovered;
         }
         public static int CountCoveredAround(Tile tile)
         {

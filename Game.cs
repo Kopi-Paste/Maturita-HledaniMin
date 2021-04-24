@@ -166,7 +166,11 @@ namespace GloriousMinesweeper
             {
                 if (flagMines && tile.Mine && !tile.Flag) //Pokud se mají vyznačit políčka s minami
                 {
-                    tile.SetTileToFlag();
+                    tile.SetTileToFlag(); //Tak se všechna políčka s minou bez vlajky označí valjkou
+                }
+                if (flagMines && !tile.Mine && tile.Flag)
+                {
+                    tile.SetTileToNoFlag(); //A všechna políčka bez miny s vlajkou se odznačí
                 }
                 tile.PrintTile(); //A každé políčko se vytiskne
             }
