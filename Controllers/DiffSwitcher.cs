@@ -183,7 +183,7 @@ namespace GloriousMinesweeper
                 Colours[3] = new GameSetting("Uncovered tiles secondary colour", 1, true, false, 23); //Druhá barva otočených políček: Tmavě modrá
                 Colours[4] = new GameSetting("Flag colour", 12, true, false, 25); //Barva vlaječek: Červená
                 Colours[5] = new GameSetting("Highlighted tile colour", 13, true, false, 27); //Barva vybraného políčka Fialová (Magenta)
-                Colours[6] = new GameSetting("Text colour", 7, false, true, 29); //Barva textu: Šedá
+                Colours[6] = new GameSetting("Text colour", 14, false, true, 29); //Barva textu: Šedá
                 Program.DefaultTextColour = (ConsoleColor)Colours[6].SettingValue.Number; //Šedá barva se nahraje také do fieldu Program.DefaultTextColour, čili všechny texty budou mít šedou barvu
                 Program.TakenColours.Clear(); //Restartuje se field Program.TakenColours a nahrají se do něj výchozí barvy
                 foreach (GameSetting gameSetting in Colours) //Projede se celý Array
@@ -201,7 +201,7 @@ namespace GloriousMinesweeper
             ///Tato metoda nastaví nastavená barev, které má načtená hra. Dělá se to proto, aby se vše tisklo podle nově načtených barev.
             ///Parametry dostáváme ve formě stringů, neboť se čtou ze souboru
             for (int x = 0; x < 7; x++)
-                Colours[x].ChangeValueTo(Int32.Parse(Parameters[x + 3]), GameControls.Reprint); //Nejprve se projedou všechny barvy ve fieldu DiffSwitcheru a nahradí se hodnotami z Arraye stringů. Opět je zde posun o 3 pozice. Hodnoty získáváme pomocí metody Int32.Parse(string)
+                Colours[x].ChangeValueTo(Int32.Parse(Parameters[x + 3]), GameControls.Reprint, false); //Nejprve se projedou všechny barvy ve fieldu DiffSwitcheru a nahradí se hodnotami z Arraye stringů. Opět je zde posun o 3 pozice. Hodnoty získáváme pomocí metody Int32.Parse(string)
             Program.TakenColours.Clear(); //Restartuje se field Program.TakenColours a nahrají se do něj nově načtené barvy
             foreach (GameSetting setting in Colours) //Projede se celý Array s novými hodnotami
             {

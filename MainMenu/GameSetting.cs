@@ -13,7 +13,7 @@ namespace GloriousMinesweeper
 
         public GameSetting(string text, int defaultValue, bool colourable, bool textColour, int line) //Konstruktor obdrží název nastavení, jeho výchozí hodnotu, booleany týkající se barev a pozici
         {
-            text += ": "; //K názvu se přifdá dvojtečka a mezera
+            text += ": "; //K názvu se přidá dvojtečka a mezera
             ConsoleColor background;
             if (colourable)
                 background = (ConsoleColor)defaultValue;
@@ -85,13 +85,13 @@ namespace GloriousMinesweeper
                     SettingValue.ChangeBy(change, Reprint); //Pokud je podmínka splněna, může se počet min změnit
             }
         }
-        public void ChangeValueTo(int newValue, Action Reprint)
+        public void ChangeValueTo(int newValue, Action Reprint, bool immediatePrint = true)
         {
             ///Shruntí
             ///Tato metoda nastaví hodnoty barev na dané číslo
             if (!Colour && !TextColour) //Metoda mění pouze nastavení barev
                 return;
-            SettingValue.ChangeTo(newValue, Reprint); //Provede se změna čísla
+            SettingValue.ChangeTo(newValue, Reprint, immediatePrint); //Provede se změna čísla
             if (Colour) //Pokud se jedná o klasickou barvu,
             {
                 Setting.ChangeColour(newValue); //tak se nastaví nová barva do pozadí pro název i hodnotu nastavení

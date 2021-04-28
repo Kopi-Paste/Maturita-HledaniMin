@@ -16,7 +16,7 @@ namespace GloriousMinesweeper
          ///Show Highscores: Zobrazit tabulku nejlepších výsledků
          ///Quit: Ukončit program
             Console.BackgroundColor = ConsoleColor.Black; //Restartuje barvu pozadí v konzoli na černou
-            Console.ForegroundColor = ConsoleColor.White;//Nastaví barvu v konzoli na bílou
+            Console.ForegroundColor = ConsoleColor.Yellow;//Nastaví barvu textu v konzoli na žlutou
             TakenColours = new List<ConsoleColor>(); //Ve fieldu TakenColors se vytvoří nový prázdný seznam, do kterého budou později přidávány a odebírany barvy. Pokud je nějaká barva v seznamu, není možné nějaké nastavení na tuto barvu změnit, aby nemohly mít dva artikly stejnou barvu.
             Console.CursorVisible = false; //Skryje kurzor, neboť působí rušivě
             Console.WriteLine("Please fullscreen"); //Objeví se zpráva uživateli, aby zvětšil okno na celou obrazovku
@@ -27,7 +27,7 @@ namespace GloriousMinesweeper
             while (Console.KeyAvailable)
                 Console.ReadKey(true); //Tento while cyklus odstraní ze streamu kláves všechny stisknuté klávesy. Dokud není stream kláves prázdný čte klávesy a nechává je být.
             Console.CursorVisible = false; //Znovu skryje kurzor, který se může při zvětšení okna znovu objevit
-            DefaultTextColour = ConsoleColor.Gray; //Výchozí barva textu se nastaví na šedou, která je stále velmi dobře čitelná na černém podkladu. Bílá barva se bude používat na zvýrazňování vybraného tlačítka.
+            DefaultTextColour = ConsoleColor.Yellow; //Výchozí barva textu se nastaví na žlutou, která je stále velmi dobře čitelná na černém podkladu. Bílá barva se bude používat na zvýrazňování vybraného tlačítka.
             FirstStart = true; //Field FirstStart, který indikuje zda uživatel zapíná nastavení hry poprvé, se nastaví na true
             PositionedText PlayGame = new PositionedText("Play Minesweeper", ConsoleColor.Black, Console.WindowWidth / 2 - 8, 10); //Vytvoří se tlačítko, kterým se zapíná hra
             PositionedText ShowHighscores = new PositionedText("See Highscores", ConsoleColor.Black, Console.WindowWidth / 2 - 7, 12);//Vytvoří se tlačítko, kterým se zobrazují nejlepší výsledky

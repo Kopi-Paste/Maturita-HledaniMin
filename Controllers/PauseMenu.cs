@@ -124,7 +124,7 @@ namespace GloriousMinesweeper
         {
             ///Shrnutí
             ///Tato metoda ukládá hru do souboru .txt
-            ///Tento soubor bude mít 5 řádků
+            ///Tento soubor bude mít 6 řádků
             ///První řádek: Pozice umístěných vlaječek
             ///Druhý řádek: Pozice umístěných otazníků
             ///Třetí řádek: Pozice min

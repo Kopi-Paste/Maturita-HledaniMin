@@ -26,7 +26,7 @@ namespace GloriousMinesweeper
             Number += value; //Změní se hodnota o zadanou value
             Print(false, Reprint); //A číslo se vytiskne znovu
         }
-        public void ChangeTo(int number, Action Reprint)
+        public void ChangeTo(int number, Action Reprint, bool immediatePrint = true)
         {
             ///Shrnutí
             ///Číslo se změní na danou hodnotu a znovu se vytiskne
@@ -39,7 +39,8 @@ namespace GloriousMinesweeper
                 numberOfDigits = (int)Math.Floor(Math.Log10(Number)) + 1;
             Console.Write(new string(' ', numberOfDigits));
             Number = number; //Tentokrát se však použije = a ne +=
-            Print(false, Reprint);
+            if (immediatePrint)
+                Print(false, Reprint);
         }
         public override void Print(bool highlight, Action Reprint)
         {
