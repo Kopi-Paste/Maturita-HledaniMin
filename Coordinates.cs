@@ -28,7 +28,7 @@ namespace GloriousMinesweeper
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.Clear();
                 Console.SetCursorPosition(0, 0);
-                Console.WriteLine("This application can not run on your device");
+                Console.WriteLine("This application can not run on your device with current settings");
                 Console.ReadKey();
                 Environment.Exit(0);
             }

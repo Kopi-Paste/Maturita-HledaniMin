@@ -8,7 +8,7 @@ namespace GloriousMinesweeper
         ///Shrnutí
         ///Hlavní statická třída celého programu. Zde se odehrává samotná hra
         public static Game PlayedGame { get; set; } //Hra, kterou hráč hraje
-        public static ChangableCoordinates CurrentMinefieldPosition { get; private set; } //Současná pozice, na které se hráč v Minefieldu nachází
+        public static ChangeableCoordinates CurrentMinefieldPosition { get; private set; } //Současná pozice, na které se hráč v Minefieldu nachází
         public static Tile CurrentTile { get; private set; } //Současné vybrané políčko
         private static bool EndGame { get; set; } //Bool, který udává, zda je již hra dokončena (ať už výhrou nebo prohrou)
         public static PositionedNumber UncoveredTiles { get; private set; } //Počet otočených políček, který je graficky zobrazován uživateli
@@ -24,7 +24,7 @@ namespace GloriousMinesweeper
             ///Nastaví původní hodnoty a také grafiky k vytisknutí
             if (((Console.LargestWindowWidth - 5) > Console.WindowWidth) || ((Console.LargestWindowHeight - 3) > Console.WindowHeight)) //Nejprve se ověří, zda je hra na celou obrazovku, protože jinak by se mohly vytvořit grafiky na chybných pozicích
                 Program.WaitForFix(); //Počká se tedy, než hráč dá hru na celou obrazovku
-            CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1); //CurrentMinefieldPosition se nastaví na 0, 0 a vrchní hranice se nastaví na počet políček - 1
+            CurrentMinefieldPosition = new ChangeableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1); //CurrentMinefieldPosition se nastaví na 0, 0 a vrchní hranice se nastaví na počet políček - 1
             CurrentTile = PlayedGame.Minefield[0, 0];
             IncorrectFlags = 0;
             UncoveredTiles = new PositionedNumber(0, ConsoleColor.Black, Console.WindowWidth - 34, 6);
@@ -105,7 +105,7 @@ namespace GloriousMinesweeper
             ///Shrnutí
             ///Metoda, která se zavolá, když hráč zvítězí
             CompletionTime.Stop(); //Časomíra se ukončí
-            score = Math.Round(1000 * ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * PlayedGame.Mines * PlayedGame.Mines / CompletionTime.ElapsedMilliseconds, 5); //Výpočet skóre, zoohledněn je počet políček, min, čas a samozřejmě ScoreMultiplier
+            score = Math.Round(ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * (int)Math.Pow(PlayedGame.Mines, 3) / (CompletionTime.ElapsedMilliseconds / 1000), 5); //Výpočet skóre, zohledněn je počet políček, min, čas a samozřejmě ScoreMultiplier
             playTime = CompletionTime; //Vrátí zpátky true jakožto hlavní hodnotu, neboť hra je vyhrána, vypočítá se skóre a to se vrátí přes out
             return true;
         }
@@ -551,7 +551,7 @@ namespace GloriousMinesweeper
             ///Metoda, která do fieldů GameControls vloží načtené hodnoty
             string[] parameters = SavedGame[4].Split(','); //Parametry jsou umístěny v pátém řádku uloženého souboru, ten je následně rozděleny podle čárek na jednotlivé parametry
             string[] time = SavedGame[5].Split(';'); //Uběhlý čas je umístěn v šestém řádku uloženého souboru, dvě čísla jsou rozdělena středníkem
-            CurrentMinefieldPosition = new ChangableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1); //CurrentMinefieldPosition se restartuje a především se nově spočtou jeho maximální hodnoty
+            CurrentMinefieldPosition = new ChangeableCoordinates(0, 0, PlayedGame.HorizontalTiles - 1, PlayedGame.VerticalTiles - 1); //CurrentMinefieldPosition se restartuje a především se nově spočtou jeho maximální hodnoty
             CurrentTile = PlayedGame.Minefield[0, 0]; //CurrentTile se restartuje
             UncoveredTiles.ChangeTo(Int32.Parse(parameters[10]), Reprint, false); //Z parametrů se načte počet odkrytých políček a ten se také změní a přetiskne. Pokud při tištění není hra nastavena na celou obrazovku, počká se na opravu od uživatele, vymaže se Console a vytiskne se toto menu znovu od začátku
             NumberOfFlags.ChangeTo(Int32.Parse(parameters[11]), Reprint, false); //To stejné čeká i počet vlaječek

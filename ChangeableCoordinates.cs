@@ -1,6 +1,6 @@
 ﻿namespace GloriousMinesweeper
 {
-    class ChangableCoordinates : Coordinates
+    class ChangeableCoordinates : Coordinates
     {
         ///Shrnutí
         ///Tato třída dědí z Coordinates
@@ -10,7 +10,7 @@
         private int VerticalMax { get; }
 
 
-        public ChangableCoordinates(int horizontal, int vertical, int horizontalMax, int verticalMax) : base(horizontal, vertical) //Konstruktor funguje stejně jako ten pro Coordinates, pouze vyžaduje čísla udávající maxima
+        public ChangeableCoordinates(int horizontal, int vertical, int horizontalMax, int verticalMax) : base(horizontal, vertical) //Konstruktor funguje stejně jako ten pro Coordinates, pouze vyžaduje čísla udávající maxima
         {
             HorizontalMax = horizontalMax;
             VerticalMax = verticalMax;
