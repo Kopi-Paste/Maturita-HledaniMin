@@ -105,7 +105,7 @@ namespace GloriousMinesweeper
             ///Shrnutí
             ///Metoda, která se zavolá, když hráč zvítězí
             CompletionTime.Stop(); //Časomíra se ukončí
-            score = Math.Round(ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * (int)Math.Pow(PlayedGame.Mines, 3) / (CompletionTime.ElapsedMilliseconds / 1000), 5); //Výpočet skóre, zohledněn je počet políček, min, čas a samozřejmě ScoreMultiplier
+            score = Math.Round(1000 * ScoreMultiplier * PlayedGame.HorizontalTiles * PlayedGame.VerticalTiles * (int)Math.Pow(PlayedGame.Mines, 3) / CompletionTime.ElapsedMilliseconds, 5); //Výpočet skóre, zohledněn je počet políček, min, čas a samozřejmě ScoreMultiplier
             playTime = CompletionTime; //Vrátí zpátky true jakožto hlavní hodnotu, neboť hra je vyhrána, vypočítá se skóre a to se vrátí přes out
             return true;
         }

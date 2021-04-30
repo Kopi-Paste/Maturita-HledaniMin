@@ -70,7 +70,7 @@ namespace GloriousMinesweeper
                 int otherValue = tiles / SettingValue.Number; //Spočítá se hodnota druhého nastavení z celkového počtu políček, který je vstupní hodnotou
                 if (((SettingValue.Number + change) < 4 || (SettingValue.Number + change) > 50) || (((SettingValue.Number + change) * otherValue) < (mines + 20))) //Políček nesmí být ani v jednom rozměru méně než čtyři, více než padesát nebo dohromady tolik, že by se rozdíl mezi počtem políček a počtem min dostal pod dvacet
                 { }
-                else if ((Setting.Text == "Number of horizontal tiles: ") && (SettingValue.Number + change) > (Console.WindowWidth - 153)) //Zároveň nesmí být horizontálních políček tolik, že by se hrací plocha s okolními grafikami nevešla na obrazovku
+                else if ((Setting.Text == "Number of horizontal tiles: ") &&  (2 *(SettingValue.Number + change)) > (Console.WindowWidth - 115)) //Zároveň nesmí být horizontálních políček tolik, že by se hrací plocha s okolními grafikami nevešla na obrazovku
                 { }
                 else if ((Setting.Text == "Number of vertical tiles: ") && (SettingValue.Number + change) > (Console.WindowHeight - 4)) //To stejné platí i pro vertikální políčka
                 { }
